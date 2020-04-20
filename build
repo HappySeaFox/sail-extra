@@ -1,0 +1,60 @@
+#!/bin/sh -e
+
+cd "$(dirname "$0")"
+
+builddir="$PWD/builddir"
+
+######################
+#  Extra libs paths  #
+######################
+libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
+
+# Where all built libs and headers will be installed
+export B="$PWD/B"
+
+# Clean old builds
+rm -rf "$B"
+rm -rf "$builddir"
+
+# Add current dir to PATH to enable pkg-config, nasm etc.
+export PATH=$PATH:$PWD/bin
+
+if ! which pkg-config.exe >/dev/null 2>&1; then
+    echo "pkg-config is not found in PATH" >&2
+    exit 1
+fi
+
+##########
+#  JPEG  #
+##########
+if ! which nasm >/dev/null 2>&1; then
+    echo "NASM is not found in PATH" >&2
+    exit 1
+fi
+
+libjpeg="$(basename "$libjpeg_path")"
+build="$builddir/$libjpeg"
+rm -rf "$build"
+mkdir -p "$build"
+cd "$build"
+tar -zxf "$libjpeg_path" --strip-components=1
+
+mkdir build
+cd build
+cmake -A x64 -DENABLE_SHARED=ON -DENABLE_STATIC=OFF -DWITH_TURBOJPEG=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+cmake --build . --config Release
+
+# install
+install -D -m 644 jconfig.h     "$B/include/jconfig.h"
+install -D -m 644 ../jerror.h   "$B/include/jerror.h"
+install -D -m 644 ../jmorecfg.h "$B/include/jmorecfg.h"
+install -D -m 644 ../jpeglib.h  "$B/include/jpeglib.h"
+
+install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
+
+install -D -m 644 Release/jpeg62.dll "$B/bin/jpeg62.dll"
+install -D -m 644 Release/jpeg.lib   "$B/lib/jpeg.lib"
+
+echo
+echo Success
+echo
