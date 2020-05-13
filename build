@@ -8,9 +8,16 @@ builddir="$PWD/builddir"
 #  Extra libs paths  #
 ######################
 libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
+libz_path="$PWD/src/zlib-1.2.11.tar.gz"
+libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
+
+#################
+#  Build setup  #
+#################
 
 # Where all built libs and headers will be installed
 export B="$PWD/B"
+export ROOT="$PWD"
 
 # Clean old builds
 rm -rf "$B"
@@ -24,36 +31,123 @@ if ! which pkg-config.exe >/dev/null 2>&1; then
     exit 1
 fi
 
+unpack()
+{
+    local path="$1"
+    local name="$(basename "$path")"
+    local build="$builddir/$name"
+
+    echo
+    echo "Building $path"
+    echo
+
+    rm -rf "$build"
+    mkdir -p "$build"
+    cd "$build"
+    tar -zxf "$path" --strip-components=1
+}
+
 ##########
 #  JPEG  #
 ##########
-if ! which nasm >/dev/null 2>&1; then
-    echo "NASM is not found in PATH" >&2
-    exit 1
-fi
 
-libjpeg="$(basename "$libjpeg_path")"
-build="$builddir/$libjpeg"
-rm -rf "$build"
-mkdir -p "$build"
-cd "$build"
-tar -zxf "$libjpeg_path" --strip-components=1
+build_jpeg()
+{
+    if ! which nasm >/dev/null 2>&1; then
+        echo "NASM is not found in PATH" >&2
+        exit 1
+    fi
 
-mkdir build
-cd build
-cmake -A x64 -DENABLE_SHARED=ON -DENABLE_STATIC=OFF -DWITH_TURBOJPEG=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-cmake --build . --config Release
+    unpack "$libjpeg_path"
 
-# install
-install -D -m 644 jconfig.h     "$B/include/jconfig.h"
-install -D -m 644 ../jerror.h   "$B/include/jerror.h"
-install -D -m 644 ../jmorecfg.h "$B/include/jmorecfg.h"
-install -D -m 644 ../jpeglib.h  "$B/include/jpeglib.h"
+    mkdir build
+    cd build
+    cmake -A x64 -DENABLE_SHARED=ON -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . --config Release
 
-install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
+    # install
+    install -D -m 644 jconfig.h     "$B/include/jconfig.h"
+    install -D -m 644 ../jerror.h   "$B/include/jerror.h"
+    install -D -m 644 ../jmorecfg.h "$B/include/jmorecfg.h"
+    install -D -m 644 ../jpeglib.h  "$B/include/jpeglib.h"
 
-install -D -m 644 Release/jpeg62.dll "$B/bin/jpeg62.dll"
-install -D -m 644 Release/jpeg.lib   "$B/lib/jpeg.lib"
+    install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
+
+    install -D -m 644 Release/jpeg62.dll "$B/bin/jpeg62.dll"
+    install -D -m 644 Release/jpeg.lib   "$B/lib/jpeg.lib"
+
+    cd "$ROOT"
+}
+
+##########
+#  ZLIB  #
+##########
+
+build_zlib()
+{
+    unpack "$libz_path"
+
+    # The used zlib version has a bug with not including some AMD64 instructions. Need to include inffas8664.c
+    # to fix it.
+    sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
+
+    # Fix pkg-config library name
+    sed -i "s|-lz|-lzlib|" zlib.pc.cmakein
+
+    mkdir build
+    cd build
+    cmake -A x64 -DAMD64=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . --config Release
+
+    # install
+    install -D -m 644 zconf.h     "$B/include/zconf.h"
+    install -D -m 644 ../zlib.h   "$B/include/zlib.h"
+    install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
+
+    install -D -m 644 Release/zlib1.dll "$B/bin/zlib1.dll"
+    install -D -m 644 Release/zlib.lib  "$B/lib/zlib.lib"
+
+    cd "$ROOT"
+}
+
+#########
+#  PNG  #
+#########
+
+build_png()
+{
+    unpack "$libpng_path"
+
+    # Enable and fix the pkg-config file
+    sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32)|" CMakeLists.txt
+    sed -i "s|-lz -lm|-lzlib|" CMakeLists.txt
+    sed -i "s|-lpng|-llibpng|" libpng.pc.in
+
+    mkdir build
+    cd build
+    cmake -A x64 -DPNG_SHARED=ON -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . --config Release
+
+    # install
+    install -D -m 644 pnglibconf.h "$B/include/libpng16/pnglibconf.h"
+    install -D -m 644 ../png.h     "$B/include/libpng16/png.h"
+    install -D -m 644 ../pngconf.h "$B/include/libpng16/pngconf.h"
+
+    install -D -m 644 libpng16.pc  "$B/lib/pkgconfig/libpng16.pc"
+
+    install -D -m 644 Release/libpng16.dll "$B/bin/libpng16.dll"
+    install -D -m 644 Release/libpng16.lib "$B/lib/libpng16.lib"
+
+    cd "$ROOT"
+}
+
+###########
+#  BUILD  #
+###########
+
+build_jpeg
+build_zlib
+build_png
 
 echo
 echo Success
