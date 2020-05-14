@@ -7,6 +7,7 @@ builddir="$PWD/builddir"
 ######################
 #  Extra libs paths  #
 ######################
+
 libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
 libz_path="$PWD/src/zlib-1.2.11.tar.gz"
 libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
@@ -91,7 +92,7 @@ build_zlib()
     # to fix it.
     sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
 
-    # Fix pkg-config library name
+    # Fix the pkg-config library name
     sed -i "s|-lz|-lzlib|" zlib.pc.cmakein
 
     mkdir build
@@ -118,8 +119,10 @@ build_png()
 {
     unpack "$libpng_path"
 
-    # Enable and fix the pkg-config file
+    # Enable the pkg-config file
     sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32)|" CMakeLists.txt
+
+    # Fix the pkg-config libraries names
     sed -i "s|-lz -lm|-lzlib|" CMakeLists.txt
     sed -i "s|-lpng|-llibpng|" libpng.pc.in
 
