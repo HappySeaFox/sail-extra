@@ -17,6 +17,7 @@ cmake_options="-A x64"
 libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
 libz_path="$PWD/src/zlib-1.2.11.tar.gz"
 libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
+libapng_patch_path="$PWD/src/libpng-1.6.37-apng.patch"
 
 #################
 #  Build setup  #
@@ -124,6 +125,8 @@ build_zlib()
 build_png()
 {
     unpack "$libpng_path"
+
+    patch -p1 < "$libapng_patch_path"
 
     # Enable the pkg-config file
     sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32)|" CMakeLists.txt
