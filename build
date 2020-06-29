@@ -61,6 +61,33 @@ unpack()
 }
 
 ##########
+#  ZLIB  #
+##########
+
+build_zlib()
+{
+    unpack "$libz_path"
+
+    # The used zlib version has a bug with not including some AMD64 instructions. Need to include inffas8664.c
+    # to fix it.
+    sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
+
+    mkdir build
+    cd build
+    cmake $cmake_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . --config Release
+
+    # install
+    install -D -m 644 zconf.h     "$B/include/zconf.h"
+    install -D -m 644 ../zlib.h   "$B/include/zlib.h"
+    install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
+
+    install -D -m 644 Release/zlibstatic.lib "$B/lib/z.lib"
+
+    cd "$ROOT"
+}
+
+##########
 #  JPEG  #
 ##########
 
@@ -87,33 +114,6 @@ build_jpeg()
     install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
 
     install -D -m 644 Release/jpeg-static.lib "$B/lib/jpeg.lib"
-
-    cd "$ROOT"
-}
-
-##########
-#  ZLIB  #
-##########
-
-build_zlib()
-{
-    unpack "$libz_path"
-
-    # The used zlib version has a bug with not including some AMD64 instructions. Need to include inffas8664.c
-    # to fix it.
-    sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
-
-    mkdir build
-    cd build
-    cmake $cmake_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config Release
-
-    # install
-    install -D -m 644 zconf.h     "$B/include/zconf.h"
-    install -D -m 644 ../zlib.h   "$B/include/zlib.h"
-    install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
-
-    install -D -m 644 Release/zlibstatic.lib "$B/lib/z.lib"
 
     cd "$ROOT"
 }
