@@ -1,5 +1,9 @@
 #!/bin/sh -e
 
+#
+# Script to build SAIL dependencies: libjpeg, libpng, etc. Run it in Git Bash.
+#
+
 cd "$(dirname "$0")"
 
 builddir="$PWD/builddir"
@@ -18,6 +22,7 @@ libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
 libz_path="$PWD/src/zlib-1.2.11.tar.gz"
 libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
 libapng_patch_path="$PWD/src/libpng-1.6.37-apng.patch"
+libtiff_path="$PWD/src/tiff-4.1.0.tar.gz"
 
 #################
 #  Build setup  #
@@ -70,7 +75,7 @@ build_jpeg()
 
     mkdir build
     cd build
-    cmake $cmake_options -DENABLE_SHARED=ON -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . --config Release
 
     # install
@@ -81,8 +86,7 @@ build_jpeg()
 
     install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
 
-    install -D -m 644 Release/jpeg62.dll "$B/bin/jpeg62.dll"
-    install -D -m 644 Release/jpeg.lib   "$B/lib/jpeg.lib"
+    install -D -m 644 Release/jpeg-static.lib "$B/lib/jpeg.lib"
 
     cd "$ROOT"
 }
@@ -99,12 +103,9 @@ build_zlib()
     # to fix it.
     sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
 
-    # Fix the pkg-config library name
-    sed -i "s|-lz|-lzlib|" zlib.pc.cmakein
-
     mkdir build
     cd build
-    cmake $cmake_options -DAMD64=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . --config Release
 
     # install
@@ -112,8 +113,7 @@ build_zlib()
     install -D -m 644 ../zlib.h   "$B/include/zlib.h"
     install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
 
-    install -D -m 644 Release/zlib1.dll "$B/bin/zlib1.dll"
-    install -D -m 644 Release/zlib.lib  "$B/lib/zlib.lib"
+    install -D -m 644 Release/zlibstatic.lib "$B/lib/z.lib"
 
     cd "$ROOT"
 }
@@ -131,13 +131,12 @@ build_png()
     # Enable the pkg-config file
     sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32)|" CMakeLists.txt
 
-    # Fix the pkg-config libraries names
-    sed -i "s|-lz -lm|-lzlib|" CMakeLists.txt
-    sed -i "s|-lpng|-llibpng|" libpng.pc.in
+    # On Windows we have no libm
+    sed -i "s|-lm||" CMakeLists.txt
 
     mkdir build
     cd build
-    cmake $cmake_options -DPNG_SHARED=ON -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_options -DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . --config Release
 
     # install
@@ -147,8 +146,34 @@ build_png()
 
     install -D -m 644 libpng16.pc  "$B/lib/pkgconfig/libpng16.pc"
 
-    install -D -m 644 Release/libpng16.dll "$B/bin/libpng16.dll"
-    install -D -m 644 Release/libpng16.lib "$B/lib/libpng16.lib"
+    install -D -m 644 Release/libpng16_static.lib "$B/lib/png16.lib"
+
+    cd "$ROOT"
+}
+
+##########
+#  TIFF  #
+##########
+
+build_tiff()
+{
+    unpack "$libtiff_path"
+
+    # "build" already exists in tiff-4.1.0
+    mkdir bld
+    cd bld
+    cmake $cmake_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . --config Release
+
+    # install
+    install -D -m 644 ../libtiff/tiff.h     "$B/include/tiff.h"
+    install -D -m 644 libtiff/tiffconf.h    "$B/include/tiffconf.h"
+    install -D -m 644 ../libtiff/tiffio.h   "$B/include/tiffio.h"
+    install -D -m 644 ../libtiff/tiffvers.h "$B/include/tiffvers.h"
+
+    install -D -m 644 libtiff-4.pc          "$B/lib/pkgconfig/libtiff-4.pc"
+
+    install -D -m 644 libtiff/Release/tiff.lib "$B/lib/tiff.lib"
 
     cd "$ROOT"
 }
@@ -157,9 +182,11 @@ build_png()
 #  BUILD  #
 ###########
 
-build_jpeg
 build_zlib
+
+build_jpeg
 build_png
+build_tiff
 
 echo
 echo Success
