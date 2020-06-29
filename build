@@ -102,7 +102,7 @@ build_jpeg()
 
     mkdir build
     cd build
-    cmake $cmake_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DWITH_CRT_DLL=ON -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . --config Release
 
     # install
