@@ -18,8 +18,10 @@ cmake_options="-A x64"
 #  Extra libs paths  #
 ######################
 
-libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
 libz_path="$PWD/src/zlib-1.2.11.tar.gz"
+libzstd_path="$PWD/src/zstd-1.4.5.tar.gz"
+
+libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
 libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
 libapng_patch_path="$PWD/src/libpng-1.6.37-apng.patch"
 libtiff_path="$PWD/src/tiff-4.1.0.tar.gz"
@@ -83,6 +85,29 @@ build_zlib()
     install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
 
     install -D -m 644 Release/zlibstatic.lib "$B/lib/z.lib"
+
+    cd "$ROOT"
+}
+
+##########
+#  ZSTD  #
+##########
+
+build_zstd()
+{
+    unpack "$libzstd_path"
+
+    # Enable pkg-config on Windows
+    sed -i "s|^if (UNIX)|if (UNIX OR WIN32)|" build/cmake/lib/CMakeLists.txt
+
+    cd build/cmake
+    mkdir build
+    cd build
+    cmake $cmake_options -DZSTD_BUILD_SHARED=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . --config Release --target install
+
+    # move the static library
+    mv "$B/lib/zstd_static.lib" "$B/lib/zstd.lib"
 
     cd "$ROOT"
 }
@@ -183,6 +208,7 @@ build_tiff()
 ###########
 
 build_zlib
+build_zstd
 
 build_jpeg
 build_png
