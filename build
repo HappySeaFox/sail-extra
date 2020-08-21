@@ -13,6 +13,7 @@ builddir="$PWD/builddir"
 ########################
 
 cmake_options="-A x64"
+cmake_build_type="Release"
 
 ######################
 #  Extra libs paths  #
@@ -77,14 +78,14 @@ build_zlib()
     mkdir build
     cd build
     cmake $cmake_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config Release
+    cmake --build . --config $cmake_build_type
 
     # install
     install -D -m 644 zconf.h     "$B/include/zconf.h"
     install -D -m 644 ../zlib.h   "$B/include/zlib.h"
     install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
 
-    install -D -m 644 Release/zlibstatic.lib "$B/lib/z.lib"
+    install -D -m 644 $cmake_build_type/zlibstatic.lib "$B/lib/z.lib"
 
     cd "$ROOT"
 }
@@ -104,7 +105,7 @@ build_zstd()
     mkdir build
     cd build
     cmake $cmake_options -DZSTD_BUILD_SHARED=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config Release --target install
+    cmake --build . --config $cmake_build_type --target install
 
     # move the static library
     mv "$B/lib/zstd_static.lib" "$B/lib/zstd.lib"
@@ -128,7 +129,7 @@ build_jpeg()
     mkdir build
     cd build
     cmake $cmake_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DWITH_CRT_DLL=ON -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config Release
+    cmake --build . --config $cmake_build_type
 
     # install
     install -D -m 644 jconfig.h     "$B/include/jconfig.h"
@@ -138,7 +139,7 @@ build_jpeg()
 
     install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
 
-    install -D -m 644 Release/jpeg-static.lib "$B/lib/jpeg.lib"
+    install -D -m 644 $cmake_build_type/jpeg-static.lib "$B/lib/jpeg.lib"
 
     cd "$ROOT"
 }
@@ -162,7 +163,7 @@ build_png()
     mkdir build
     cd build
     cmake $cmake_options -DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config Release
+    cmake --build . --config $cmake_build_type
 
     # install
     install -D -m 644 pnglibconf.h "$B/include/libpng16/pnglibconf.h"
@@ -171,7 +172,7 @@ build_png()
 
     install -D -m 644 libpng16.pc  "$B/lib/pkgconfig/libpng16.pc"
 
-    install -D -m 644 Release/libpng16_static.lib "$B/lib/png16.lib"
+    install -D -m 644 $cmake_build_type/libpng16_static.lib "$B/lib/png16.lib"
 
     cd "$ROOT"
 }
@@ -188,7 +189,7 @@ build_tiff()
     mkdir bld
     cd bld
     cmake $cmake_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config Release
+    cmake --build . --config $cmake_build_type
 
     # install
     install -D -m 644 ../libtiff/tiff.h     "$B/include/tiff.h"
@@ -198,7 +199,7 @@ build_tiff()
 
     install -D -m 644 libtiff-4.pc          "$B/lib/pkgconfig/libtiff-4.pc"
 
-    install -D -m 644 libtiff/Release/tiff.lib "$B/lib/tiff.lib"
+    install -D -m 644 libtiff/$cmake_build_type/tiff.lib "$B/lib/tiff.lib"
 
     cd "$ROOT"
 }
