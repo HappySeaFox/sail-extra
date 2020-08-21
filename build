@@ -105,10 +105,13 @@ build_zstd()
     mkdir build
     cd build
     cmake $cmake_options -DZSTD_BUILD_SHARED=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config $cmake_build_type --target install
+    cmake --build . --config $cmake_build_type
 
-    # move the static library
-    mv "$B/lib/zstd_static.lib" "$B/lib/zstd.lib"
+    # install
+    install -D -m 644 ../../../lib/zstd.h "$B/include/zstd.h"
+    install -D -m 644 lib/libzstd.pc      "$B/lib/pkgconfig/libzstd.pc"
+
+    install -D -m 644 lib/$cmake_build_type/zstd_static.lib "$B/lib/zstd.lib"
 
     cd "$ROOT"
 }
