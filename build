@@ -102,7 +102,7 @@ build_zlib()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_build_type/zlibstatic.lib" "$B/lib/z.lib"
+            install -D -m 644 "$cmake_windows_build_type/zlibstatic.lib" "$B/lib/z.lib"
         ;;
         Linux* | Darwin*)
             install -D -m 644 "libz.a" "$B/lib/libz.a"
@@ -142,7 +142,7 @@ build_zstd()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "lib/$cmake_build_type/zstd_static.lib" "$B/lib/zstd.lib"
+            install -D -m 644 "lib/$cmake_windows_build_type/zstd_static.lib" "$B/lib/zstd.lib"
         ;;
         Linux* | Darwin*)
             install -D -m 644 "lib/libzstd.a" "$B/lib/libzstd.a"
@@ -180,7 +180,7 @@ build_jpeg()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_build_type/jpeg-static.lib" "$B/lib/jpeg.lib"
+            install -D -m 644 "$cmake_windows_build_type/jpeg-static.lib" "$B/lib/jpeg.lib"
         ;;
         Linux* | Darwin*)
             install -D -m 644 "libjpeg.a" "$B/lib/libjpeg.a"
@@ -224,7 +224,7 @@ build_png()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_build_type/libpng16_static.lib" "$B/lib/png16.lib"
+            install -D -m 644 "$cmake_windows_build_type/libpng16_static.lib" "$B/lib/png16.lib"
         ;;
         Linux* | Darwin*)
             install -D -m 644 "libpng16.a" "$B/lib/libpng16.a"
@@ -266,7 +266,7 @@ build_tiff()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "libtiff/$cmake_build_type/tiff.lib" "$B/lib/tiff.lib"
+            install -D -m 644 "libtiff/$cmake_windows_build_type/tiff.lib" "$B/lib/tiff.lib"
         ;;
         Linux* | Darwin*)
             install -D -m 644 "libtiff/libtiff.a" "$B/lib/libtiff.a"
