@@ -17,11 +17,11 @@ platform="$(uname)"
 case "$platform" in
     MINGW*)
         cmake_windows_build_type="Release"
-        cmake_platform_generate_options="-A x64"
+        cmake_platform_generate_options="-A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options="--config $cmake_windows_build_type"
     ;;
     Linux* | Darwin*)
-        cmake_platform_generate_options=""
+        cmake_platform_generate_options="-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options=""
     ;;
     *)
