@@ -12,8 +12,23 @@ builddir="$PWD/builddir"
 #  Common configuation #
 ########################
 
-cmake_options="-A x64"
-cmake_build_type="Release"
+platform="$(uname)"
+
+case "$platform" in
+    MINGW*)
+        cmake_windows_build_type="Release"
+        cmake_platform_generate_options="-A x64"
+        cmake_platform_build_options="--config $cmake_windows_build_type"
+    ;;
+    Linux* | Darwin*)
+        cmake_platform_generate_options=""
+        cmake_platform_build_options=""
+    ;;
+    *)
+        echo "Error: Unsupported platform '$platform'" >&2
+        exit 1
+    ;;
+esac
 
 ######################
 #  Extra libs paths  #
@@ -77,15 +92,22 @@ build_zlib()
 
     mkdir build
     cd build
-    cmake $cmake_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config $cmake_build_type
+    cmake $cmake_platform_generate_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
 
     # install
     install -D -m 644 zconf.h     "$B/include/zconf.h"
     install -D -m 644 ../zlib.h   "$B/include/zlib.h"
     install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
 
-    install -D -m 644 $cmake_build_type/zlibstatic.lib "$B/lib/z.lib"
+    case "$platform" in
+        MINGW*)
+            install -D -m 644 "$cmake_build_type/zlibstatic.lib" "$B/lib/z.lib"
+        ;;
+        Linux* | Darwin*)
+            install -D -m 644 "libz.a" "$B/lib/libz.a"
+        ;;
+    esac
 
     cd "$ROOT"
 }
@@ -101,17 +123,31 @@ build_zstd()
     # Enable pkg-config on Windows
     sed -i "s|^if (UNIX)|if (UNIX OR WIN32)|" build/cmake/lib/CMakeLists.txt
 
+    # It needs pthread on UNIX
+    case "$platform" in
+        Linux* | Darwin*)
+            sed -i "s|-lzstd|-lzstd -lpthread|" lib/libzstd.pc.in
+        ;;
+    esac
+
     cd build/cmake
     mkdir build
     cd build
-    cmake $cmake_options -DZSTD_BUILD_SHARED=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config $cmake_build_type
+    cmake $cmake_platform_generate_options -DZSTD_BUILD_SHARED=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
 
     # install
     install -D -m 644 ../../../lib/zstd.h "$B/include/zstd.h"
     install -D -m 644 lib/libzstd.pc      "$B/lib/pkgconfig/libzstd.pc"
 
-    install -D -m 644 lib/$cmake_build_type/zstd_static.lib "$B/lib/zstd.lib"
+    case "$platform" in
+        MINGW*)
+            install -D -m 644 "lib/$cmake_build_type/zstd_static.lib" "$B/lib/zstd.lib"
+        ;;
+        Linux* | Darwin*)
+            install -D -m 644 "lib/libzstd.a" "$B/lib/libzstd.a"
+        ;;
+    esac
 
     cd "$ROOT"
 }
@@ -123,7 +159,7 @@ build_zstd()
 build_jpeg()
 {
     if ! which nasm >/dev/null 2>&1; then
-        echo "NASM is not found in PATH" >&2
+        echo "Error: NASM is not found in PATH" >&2
         exit 1
     fi
 
@@ -131,8 +167,8 @@ build_jpeg()
 
     mkdir build
     cd build
-    cmake $cmake_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DWITH_CRT_DLL=ON -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config $cmake_build_type
+    cmake $cmake_platform_generate_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DWITH_CRT_DLL=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
 
     # install
     install -D -m 644 jconfig.h     "$B/include/jconfig.h"
@@ -142,7 +178,14 @@ build_jpeg()
 
     install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
 
-    install -D -m 644 $cmake_build_type/jpeg-static.lib "$B/lib/jpeg.lib"
+    case "$platform" in
+        MINGW*)
+            install -D -m 644 "$cmake_build_type/jpeg-static.lib" "$B/lib/jpeg.lib"
+        ;;
+        Linux* | Darwin*)
+            install -D -m 644 "libjpeg.a" "$B/lib/libjpeg.a"
+        ;;
+    esac
 
     cd "$ROOT"
 }
@@ -158,15 +201,19 @@ build_png()
     patch -p1 < "$libapng_patch_path"
 
     # Enable the pkg-config file
-    sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32)|" CMakeLists.txt
+    sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32 OR UNIX)|" CMakeLists.txt
 
     # On Windows we have no libm
-    sed -i "s|-lm||" CMakeLists.txt
+    case "$platform" in
+        MINGW*)
+            sed -i "s|-lm||" CMakeLists.txt
+        ;;
+    esac
 
     mkdir build
     cd build
-    cmake $cmake_options -DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config $cmake_build_type
+    cmake $cmake_platform_generate_options -DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
 
     # install
     install -D -m 644 pnglibconf.h "$B/include/libpng16/pnglibconf.h"
@@ -175,7 +222,14 @@ build_png()
 
     install -D -m 644 libpng16.pc  "$B/lib/pkgconfig/libpng16.pc"
 
-    install -D -m 644 $cmake_build_type/libpng16_static.lib "$B/lib/png16.lib"
+    case "$platform" in
+        MINGW*)
+            install -D -m 644 "$cmake_build_type/libpng16_static.lib" "$B/lib/png16.lib"
+        ;;
+        Linux* | Darwin*)
+            install -D -m 644 "libpng16.a" "$B/lib/libpng16.a"
+        ;;
+    esac
 
     cd "$ROOT"
 }
@@ -188,11 +242,19 @@ build_tiff()
 {
     unpack "$libtiff_path"
 
+    # ZSTD needs pthread on UNIX
+    case "$platform" in
+        Linux* | Darwin*)
+            sed -i 's|set(ZSTD_LIBRARIES ${ZSTD_LIBRARY})|set(ZSTD_LIBRARIES "${ZSTD_LIBRARY};-lpthread")|' CMakeLists.txt
+            sed -i "s|-ltiff|-ltiff -lpthread|" libtiff-4.pc.in
+        ;;
+    esac
+
     # "build" already exists in tiff-4.1.0
     mkdir bld
     cd bld
-    cmake $cmake_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . --config $cmake_build_type
+    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
 
     # install
     install -D -m 644 ../libtiff/tiff.h     "$B/include/tiff.h"
@@ -202,7 +264,14 @@ build_tiff()
 
     install -D -m 644 libtiff-4.pc          "$B/lib/pkgconfig/libtiff-4.pc"
 
-    install -D -m 644 libtiff/$cmake_build_type/tiff.lib "$B/lib/tiff.lib"
+    case "$platform" in
+        MINGW*)
+            install -D -m 644 "libtiff/$cmake_build_type/tiff.lib" "$B/lib/tiff.lib"
+        ;;
+        Linux* | Darwin*)
+            install -D -m 644 "libtiff/libtiff.a" "$B/lib/libtiff.a"
+        ;;
+    esac
 
     cd "$ROOT"
 }
