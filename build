@@ -42,8 +42,8 @@ rm -rf "$builddir"
 # Add current dir to PATH to enable pkg-config, nasm etc.
 export PATH=$PATH:$PWD/bin
 
-if ! which pkg-config.exe >/dev/null 2>&1; then
-    echo "pkg-config is not found in PATH" >&2
+if ! which pkg-config >/dev/null 2>&1; then
+    echo "Error: pkg-config is not found in PATH" >&2
     exit 1
 fi
 
