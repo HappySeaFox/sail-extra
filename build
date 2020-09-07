@@ -290,7 +290,7 @@ build_tiff()
     # "build" already exists in tiff-4.1.0
     mkdir bld
     cd bld
-    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -Djbig=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
