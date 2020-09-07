@@ -40,6 +40,9 @@ libzstd_path="$PWD/src/zstd-1.4.5.tar.gz"
 libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
 libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
 libapng_patch_path="$PWD/src/libpng-1.6.37-apng.patch"
+libjbig_path="$PWD/src/jbigkit-2.1.tar.gz"
+libjbig_cmake_lists="$PWD/src/jbig-CMakeLists.txt"
+libjbig_pc_in="$PWD/src/jbig-libjbig.pc.in"
 libtiff_path="$PWD/src/tiff-4.1.0.tar.gz"
 
 #################
@@ -235,6 +238,40 @@ build_png()
 }
 
 ##########
+#  JBIG  #
+##########
+
+build_jbig()
+{
+    unpack "$libjbig_path"
+
+    install -D -m 644  "$libjbig_cmake_lists" "CMakeLists.txt"
+    install -D -m 644  "$libjbig_pc_in"       "libjbig.pc.in"
+
+    mkdir build
+    cd build
+    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    install -D -m 644 "../libjbig/jbig.h"    "$B/include/jbig.h"
+    install -D -m 644 "../libjbig/jbig_ar.h" "$B/include/jbig_ar.h"
+
+    install -D -m 644 libjbig.pc             "$B/lib/pkgconfig/libjbig.pc"
+
+    case "$platform" in
+        MINGW*)
+            install -D -m 644 "$cmake_windows_build_type/jbig.lib" "$B/lib/jbig.lib"
+        ;;
+        Linux* | Darwin*)
+            install -D -m 644 "libjbig.a" "$B/lib/libjbig.a"
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
+##########
 #  TIFF  #
 ##########
 
@@ -285,6 +322,7 @@ build_zstd
 
 build_jpeg
 build_png
+build_jbig
 build_tiff
 
 echo

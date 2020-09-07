@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: libjbig
+Description: JBIG lossless image compression library
+Version: @VERSION@
+Libs: -L${libdir} -ljbig
+Cflags: -I${includedir}

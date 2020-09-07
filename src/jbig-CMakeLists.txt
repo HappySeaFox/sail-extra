@@ -1,0 +1,46 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(JBIG VERSION 2.1.0
+             DESCRIPTION "JBIG lossless image compression library"
+             LANGUAGES C)
+
+include(GNUInstallDirs)
+
+# Enable strict C99
+#
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_EXTENSIONS OFF)
+
+add_library(jbig
+                libjbig/jbig.c
+                libjbig/jbig_ar.c)
+
+# Build a list of public headers to install
+#
+set(PUBLIC_HEADERS "")
+list(APPEND PUBLIC_HEADERS "libjbig/jbig.h")
+list(APPEND PUBLIC_HEADERS "libjbig/jbig_ar.h")
+
+set_target_properties(jbig PROPERTIES
+                           VERSION "2.1.0"
+                           SOVERSION 2
+                           PUBLIC_HEADER "${PUBLIC_HEADERS}")
+
+# Definitions, includes, link
+#
+#target_include_directories(jbig PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libjbig)
+
+# pkg-config integration
+#
+get_target_property(VERSION jbig VERSION)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/libjbig.pc.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/libjbig.pc" @ONLY)
+
+# Installation
+#
+install(TARGETS jbig
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libjbig.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
