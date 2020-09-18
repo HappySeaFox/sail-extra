@@ -116,8 +116,8 @@ build_zlib()
 
     # Rename the library to have "-sail" suffix
     patch CMakeLists.txt -i "$libz_rename_patch_path"
-    sed -i "s|-lz|-lzlib-sail|" zlib.pc.in
-    sed -i "s|-lz|-lzlib-sail|" zlib.pc.cmakein
+    sed -i "s|-lz|-lz-sail|" zlib.pc.in
+    sed -i "s|-lz|-lz-sail|" zlib.pc.cmakein
 
     mkdir build
     cd build
@@ -131,8 +131,8 @@ build_zlib()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/zlib-sail.lib" "$B/lib/zlib-sail.lib"
-            install -D -m 644 "$cmake_windows_build_type/zlib-sail.dll" "$B/bin/zlib-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/z-sail.lib" "$B/lib/z-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/z-sail.dll" "$B/bin/z-sail.dll"
         ;;
         Linux* | Darwin*)
             find . -name 'libz-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
