@@ -1,0 +1,18 @@
+--- CMakeLists.txt.o	2020-09-17 22:17:01.364933600 +0300
++++ CMakeLists.txt	2020-09-17 22:17:16.224954400 +0300
+@@ -529,12 +529,12 @@ unset(PNG_LIB_TARGETS)
+ if(PNG_SHARED)
+   add_library(png SHARED ${libpng_sources})
+   set(PNG_LIB_TARGETS png)
+-  set_target_properties(png PROPERTIES OUTPUT_NAME ${PNG_LIB_NAME})
++  set_target_properties(png PROPERTIES OUTPUT_NAME ${PNG_LIB_NAME}-sail)
+   add_dependencies(png genfiles)
+   if(MSVC)
+     # msvc does not append 'lib' - do it here to have consistent name
+-    set_target_properties(png PROPERTIES PREFIX "lib")
+-    set_target_properties(png PROPERTIES IMPORT_PREFIX "lib")
++    #set_target_properties(png PROPERTIES PREFIX "lib")
++    #set_target_properties(png PROPERTIES IMPORT_PREFIX "lib")
+   endif()
+   target_link_libraries(png ${ZLIB_LIBRARY} ${M_LIBRARY})
+ 

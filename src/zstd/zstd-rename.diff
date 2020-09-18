@@ -1,0 +1,10 @@
+--- CMakeLists.txt.o	2020-09-17 20:08:20.961653200 +0300
++++ CMakeLists.txt	2020-09-17 20:13:57.268319800 +0300
+@@ -124,6 +124,7 @@ if (ZSTD_BUILD_SHARED)
+             OUTPUT_NAME zstd
+             VERSION ${zstd_VERSION_MAJOR}.${zstd_VERSION_MINOR}.${zstd_VERSION_PATCH}
+             SOVERSION ${zstd_VERSION_MAJOR})
++    set_target_properties(libzstd_shared PROPERTIES OUTPUT_NAME zstd-sail)
+ endif ()
+ 
+ if (ZSTD_BUILD_STATIC)
