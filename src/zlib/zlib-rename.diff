@@ -1,17 +1,15 @@
---- CMakeLists.txt.o	2020-09-17 21:01:54.815242900 +0300
-+++ CMakeLists.txt	2020-09-17 21:02:16.645273400 +0300
-@@ -207,7 +207,13 @@ if(UNIX)
+--- CMakeLists.txt.o	2020-09-18 22:46:05.859887889 +0300
++++ CMakeLists.txt	2020-09-18 22:46:48.599002792 +0300
+@@ -207,9 +207,11 @@ if(UNIX)
     endif()
  elseif(BUILD_SHARED_LIBS AND WIN32)
      # Creates zlib1.dll when building shared library version
 -    set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
 +    #set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
-+endif()
-+
-+if(UNIX)
-+    set_target_properties(zlib PROPERTIES OUTPUT_NAME z-sail)
-+elseif(BUILD_SHARED_LIBS AND WIN32)
-+    set_target_properties(zlib PROPERTIES OUTPUT_NAME zlib-sail)
  endif()
  
++set_target_properties(zlib PROPERTIES OUTPUT_NAME z-sail)
++
  if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
+     install(TARGETS zlib zlibstatic
+         RUNTIME DESTINATION "${INSTALL_BIN_DIR}"

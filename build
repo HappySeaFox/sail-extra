@@ -19,10 +19,14 @@ case "$platform" in
         cmake_windows_build_type="Release"
         cmake_platform_generate_options="-A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options="--config $cmake_windows_build_type"
+        shared_prefix=""
+        shared_ext="lib"
     ;;
     Linux* | Darwin*)
         cmake_platform_generate_options="-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options=""
+        shared_prefix="lib"
+        shared_ext="so"
     ;;
     *)
         echo "Error: Unsupported platform '$platform'" >&2
@@ -70,6 +74,9 @@ export ROOT="$PWD"
 # Clean old builds
 rm -rf "$B"
 rm -rf "$builddir"
+
+# Used both on Windows and UNIX so create it in advance
+mkdir -p "$B/lib"
 
 # Add current dir to PATH to enable pkg-config, nasm etc.
 export PATH=$PATH:$PWD/bin
@@ -128,7 +135,7 @@ build_zlib()
             install -D -m 644 "$cmake_windows_build_type/zlib-sail.dll" "$B/bin/zlib-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libz.so" "$B/lib/libz.so"
+            find . -name 'libz-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -173,7 +180,8 @@ build_zstd()
             install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.dll" "$B/bin/zstd-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "lib/libzstd-sail.so" "$B/lib/libzstd-sail.so"
+            cd lib
+            find . -name 'libzstd-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -212,11 +220,11 @@ build_jpeg()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.lib"   "$B/lib/jpeg-sail.lib"
-            install -D -m 644 "$cmake_windows_build_type/jpeg62-sail.dll" "$B/bin/jpeg62-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.lib" "$B/lib/jpeg-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.dll" "$B/bin/jpeg-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libjpeg.a" "$B/lib/libjpeg-sail.so"
+            find . -name 'libjpeg-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -250,7 +258,7 @@ build_png()
     mkdir build
     cd build
     cmake $cmake_platform_generate_options -DPNG_SHARED=ON -DPNG_STATIC=OFF -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" \
-            -DZLIB_LIBRARY="$B/lib/zlib-sail.lib" ..
+            -DZLIB_LIBRARY="$B/lib/${shared_prefix}z-sail.${shared_ext}" ..
     cmake --build . $cmake_platform_build_options
 
     # install
@@ -266,7 +274,7 @@ build_png()
             install -D -m 644 "$cmake_windows_build_type/png16-sail.dll" "$B/bin/png16-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libpng16-sail.so" "$B/lib/libpng16-sail.so"
+            find . -name 'libpng16-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -309,7 +317,7 @@ build_jbig()
             install -D -m 644 "$cmake_windows_build_type/jbig-sail.dll" "$B/bin/jbig-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libjbig-sail.so" "$B/lib/libjbig-sail.so"
+            find . -name 'libjbig-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -340,9 +348,10 @@ build_tiff()
     mkdir bld
     cd bld
     cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=ON -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" \
-            -DZLIB_LIBRARY="$B/lib/zlib-sail.lib" -DJPEG_LIBRARY="$B/lib/jpeg-sail.lib" \
-            -DJBIG_LIBRARY="$B/lib/jbig-sail.lib" -DJBIG_INCLUDE_DIR="$B/include"       \
-            -DZSTD_LIBRARY="$B/lib/zstd-sail.lib" -DZSTD_INCLUDE_DIR="$B/include" ..
+            -DZLIB_LIBRARY="$B/lib/${shared_prefix}z-sail.${shared_ext}"                                                \
+            -DJPEG_LIBRARY="$B/lib/${shared_prefix}jpeg-sail.${shared_ext}"                                             \
+            -DJBIG_LIBRARY="$B/lib/${shared_prefix}jbig-sail.${shared_ext}" -DJBIG_INCLUDE_DIR="$B/include"             \
+            -DZSTD_LIBRARY="$B/lib/${shared_prefix}zstd-sail.${shared_ext}" -DZSTD_INCLUDE_DIR="$B/include" ..
     cmake --build . $cmake_platform_build_options
 
     # install
@@ -359,7 +368,8 @@ build_tiff()
             install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.dll" "$B/bin/tiff-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libtiff/libtiff-sail.so" "$B/lib/libtiff-sail.so"
+            cd libtiff
+            find . -name 'libtiff-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
