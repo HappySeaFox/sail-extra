@@ -157,13 +157,6 @@ build_zstd()
     patch build/cmake/lib/CMakeLists.txt -i "$libzstd_rename_patch_path"
     sed -i "s|-lzstd|-lzstd-sail|" lib/libzstd.pc.in
 
-    # It needs pthread on UNIX
-    case "$platform" in
-        Linux* | Darwin*)
-            sed -i "s|-lzstd|-lzstd -lpthread|" lib/libzstd.pc.in
-        ;;
-    esac
-
     cd build/cmake
     mkdir build
     cd build
@@ -331,14 +324,6 @@ build_jbig()
 build_tiff()
 {
     unpack "$libtiff_path"
-
-    # ZSTD needs pthread on UNIX
-    case "$platform" in
-        Linux* | Darwin*)
-            sed -i 's|set(ZSTD_LIBRARIES ${ZSTD_LIBRARY})|set(ZSTD_LIBRARIES "${ZSTD_LIBRARY};-lpthread")|' CMakeLists.txt
-            sed -i "s|-ltiff|-ltiff -lpthread|" libtiff-4.pc.in
-        ;;
-    esac
 
     # Rename the library to have "-sail" suffix
     patch libtiff/CMakeLists.txt -i "$libtiff_rename_patch_path"
