@@ -246,7 +246,7 @@ build_png()
 
     # Rename the library to have "-sail" suffix
     patch CMakeLists.txt -i "$libpng_rename_patch_path"
-    sed -i "s|-lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@|-lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-sail|" libpng.pc.in
+    sed -i "s|-lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@|-lpng-sail|" libpng.pc.in
 
     # On Windows we have no libm
     case "$platform" in
@@ -270,11 +270,11 @@ build_png()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/png16-sail.lib" "$B/lib/png16-sail.lib"
-            install -D -m 644 "$cmake_windows_build_type/png16-sail.dll" "$B/bin/png16-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/png-sail.lib" "$B/lib/png-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/png-sail.dll" "$B/bin/png-sail.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libpng16-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libpng-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
