@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2020-09-17 21:21:46.304087300 +0300
++++ CMakeLists.txt	2020-09-17 21:29:04.160707200 +0300
+@@ -26,6 +26,8 @@ set_target_properties(jbig PROPERTIES
+                            SOVERSION 2
+                            PUBLIC_HEADER "${PUBLIC_HEADERS}")
+ 
++set_target_properties(jbig PROPERTIES OUTPUT_NAME jbig-sail)
++
+ # Definitions, includes, link
+ #
+ #target_include_directories(jbig PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libjbig)

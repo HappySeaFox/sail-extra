@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2020-09-17 22:18:31.545059800 +0300
++++ CMakeLists.txt	2020-09-17 22:18:36.365066600 +0300
+@@ -134,6 +134,8 @@ if(HAVE_LD_VERSION_SCRIPT)
+                         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
+ endif()
+ 
++set_target_properties(tiff PROPERTIES OUTPUT_NAME tiff-sail)
++
+ install(TARGETS tiff
+         RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
+         LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}

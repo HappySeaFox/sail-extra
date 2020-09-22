@@ -1,0 +1,15 @@
+--- CMakeLists.txt.o	2020-09-18 22:54:25.110641662 +0300
++++ CMakeLists.txt	2020-09-18 22:55:13.820001468 +0300
+@@ -57,9 +57,11 @@ if(MSVC)
+   # The jsimd_*.c file is built using /MT, so this prevents a linker warning.
+   set_target_properties(jpeg PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCMTD")
+ elseif(MINGW)
+-  set_target_properties(jpeg PROPERTIES SUFFIX -${SO_MAJOR_VERSION}.dll)
++  #set_target_properties(jpeg PROPERTIES SUFFIX -${SO_MAJOR_VERSION}.dll)
+ endif()
+ 
++set_target_properties(jpeg PROPERTIES RUNTIME_OUTPUT_NAME jpeg-sail OUTPUT_NAME jpeg-sail)
++
+ if(WIN32)
+   set(USE_SETMODE "-DUSE_SETMODE")
+ endif()

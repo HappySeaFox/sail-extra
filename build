@@ -19,10 +19,14 @@ case "$platform" in
         cmake_windows_build_type="Release"
         cmake_platform_generate_options="-A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options="--config $cmake_windows_build_type"
+        shared_prefix=""
+        shared_ext="lib"
     ;;
     Linux* | Darwin*)
         cmake_platform_generate_options="-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options=""
+        shared_prefix="lib"
+        shared_ext="so"
     ;;
     *)
         echo "Error: Unsupported platform '$platform'" >&2
@@ -34,16 +38,30 @@ esac
 #  Extra libs paths  #
 ######################
 
-libz_path="$PWD/src/zlib-1.2.11.tar.gz"
-libzstd_path="$PWD/src/zstd-1.4.5.tar.gz"
+SRC="$PWD/src"
 
-libjpeg_path="$PWD/src/libjpeg-turbo-2.0.4.tar.gz"
-libpng_path="$PWD/src/libpng-1.6.37.tar.gz"
-libapng_patch_path="$PWD/src/libpng-1.6.37-apng.patch"
-libjbig_path="$PWD/src/jbigkit-2.1.tar.gz"
-libjbig_cmake_lists="$PWD/src/jbig-CMakeLists.txt"
-libjbig_pc_in="$PWD/src/jbig-libjbig.pc.in"
-libtiff_path="$PWD/src/tiff-4.1.0.tar.gz"
+libz_path="$SRC/zlib/zlib-1.2.11.tar.gz"
+libz_rename_patch_path="$SRC/zlib/zlib-rename.diff"
+
+libzstd_path="$SRC/zstd/zstd-1.4.5.tar.gz"
+libzstd_rename_patch_path="$SRC/zstd/zstd-rename.diff"
+
+libjpeg_path="$SRC/jpeg/libjpeg-turbo-2.0.4.tar.gz"
+libjpeg_rename_patch_path="$SRC/jpeg/libjpeg-turbo-rename.diff"
+
+libpng_path="$SRC/png/libpng-1.6.37.tar.gz"
+libapng_patch_path="$SRC/png/libpng-1.6.37-apng.patch"
+libpng_rename_patch_path="$SRC/png/libpng-rename.diff"
+
+libjbig_path="$SRC/jbig/jbigkit-2.1.tar.gz"
+libjbig_cmake_lists="$SRC/jbig/jbig-CMakeLists.txt"
+libjbig_pc_in="$SRC/jbig/jbig-libjbig.pc.in"
+libjbig_export_h="$SRC/jbig/jbig-export.h"
+libjbig_rename_patch_path="$SRC/jbig/jbig-rename.diff"
+libjbig_export_patch_path="$SRC/jbig/jbig-export.diff"
+
+libtiff_path="$SRC/tiff/tiff-4.1.0.tar.gz"
+libtiff_rename_patch_path="$SRC/tiff/tiff-rename.diff"
 
 #################
 #  Build setup  #
@@ -56,6 +74,9 @@ export ROOT="$PWD"
 # Clean old builds
 rm -rf "$B"
 rm -rf "$builddir"
+
+# Used both on Windows and UNIX so create it in advance
+mkdir -p "$B/lib"
 
 # Add current dir to PATH to enable pkg-config, nasm etc.
 export PATH=$PATH:$PWD/bin
@@ -93,22 +114,28 @@ build_zlib()
     # to fix it.
     sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
 
+    # Rename the library to have "-sail" suffix
+    patch CMakeLists.txt -i "$libz_rename_patch_path"
+    sed -i "s|-lz|-lz-sail|" zlib.pc.in
+    sed -i "s|-lz|-lz-sail|" zlib.pc.cmakein
+
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DAMD64=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DAMD64=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
-    install -D -m 644 zconf.h     "$B/include/zconf.h"
-    install -D -m 644 ../zlib.h   "$B/include/zlib.h"
-    install -D -m 644 zlib.pc     "$B/lib/pkgconfig/zlib.pc"
+    install -D -m 644 zconf.h   "$B/include/zconf.h"
+    install -D -m 644 ../zlib.h "$B/include/zlib.h"
+    install -D -m 644 zlib.pc   "$B/lib/pkgconfig/zlib.pc"
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/zlibstatic.lib" "$B/lib/z.lib"
+            install -D -m 644 "$cmake_windows_build_type/z-sail.lib" "$B/lib/z-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/z-sail.dll" "$B/bin/z-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libz.a" "$B/lib/libz.a"
+            find . -name 'libz-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -126,17 +153,14 @@ build_zstd()
     # Enable pkg-config on Windows
     sed -i "s|^if (UNIX)|if (UNIX OR WIN32)|" build/cmake/lib/CMakeLists.txt
 
-    # It needs pthread on UNIX
-    case "$platform" in
-        Linux* | Darwin*)
-            sed -i "s|-lzstd|-lzstd -lpthread|" lib/libzstd.pc.in
-        ;;
-    esac
+    # Rename the library to have "-sail" suffix
+    patch build/cmake/lib/CMakeLists.txt -i "$libzstd_rename_patch_path"
+    sed -i "s|-lzstd|-lzstd-sail|" lib/libzstd.pc.in
 
     cd build/cmake
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DZSTD_BUILD_SHARED=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
@@ -145,10 +169,12 @@ build_zstd()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "lib/$cmake_windows_build_type/zstd_static.lib" "$B/lib/zstd.lib"
+            install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.lib" "$B/lib/zstd-sail.lib"
+            install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.dll" "$B/bin/zstd-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "lib/libzstd.a" "$B/lib/libzstd.a"
+            cd lib
+            find . -name 'libzstd-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -168,9 +194,13 @@ build_jpeg()
 
     unpack "$libjpeg_path"
 
+    # Rename the library to have "-sail" suffix
+    patch sharedlib/CMakeLists.txt -i "$libjpeg_rename_patch_path"
+    sed -i "s|-ljpeg|-ljpeg-sail|" release/libjpeg.pc.in
+
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DENABLE_SHARED=OFF -DENABLE_STATIC=ON -DWITH_TURBOJPEG=OFF -DWITH_CRT_DLL=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DENABLE_SHARED=ON -DENABLE_STATIC=OFF -DWITH_TURBOJPEG=OFF -DWITH_CRT_DLL=ON -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
@@ -183,10 +213,11 @@ build_jpeg()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/jpeg-static.lib" "$B/lib/jpeg.lib"
+            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.lib" "$B/lib/jpeg-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.dll" "$B/bin/jpeg-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libjpeg.a" "$B/lib/libjpeg.a"
+            find . -name 'libjpeg-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -206,6 +237,10 @@ build_png()
     # Enable the pkg-config file
     sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32 OR UNIX)|" CMakeLists.txt
 
+    # Rename the library to have "-sail" suffix
+    patch CMakeLists.txt -i "$libpng_rename_patch_path"
+    sed -i "s|-lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@|-lpng-sail|" libpng.pc.in
+
     # On Windows we have no libm
     case "$platform" in
         MINGW*)
@@ -215,7 +250,8 @@ build_png()
 
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DPNG_SHARED=OFF -DPNG_STATIC=ON -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DPNG_SHARED=ON -DPNG_STATIC=OFF -DPNG_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$B" \
+            -DZLIB_LIBRARY="$B/lib/${shared_prefix}z-sail.${shared_ext}" ..
     cmake --build . $cmake_platform_build_options
 
     # install
@@ -227,10 +263,11 @@ build_png()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/libpng16_static.lib" "$B/lib/png16.lib"
+            install -D -m 644 "$cmake_windows_build_type/png-sail.lib" "$B/lib/png-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/png-sail.dll" "$B/bin/png-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libpng16.a" "$B/lib/libpng16.a"
+            find . -name 'libpng-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -245,26 +282,35 @@ build_jbig()
 {
     unpack "$libjbig_path"
 
-    install -D -m 644  "$libjbig_cmake_lists" "CMakeLists.txt"
-    install -D -m 644  "$libjbig_pc_in"       "libjbig.pc.in"
+    install -D -m 644 "$libjbig_cmake_lists" "CMakeLists.txt"
+    install -D -m 644 "$libjbig_pc_in"       "libjbig.pc.in"
+    install -D -m 644 "$libjbig_export_h"    "libjbig/jbig-export.h"
+
+    # Patch JBIG to export functions
+    patch -p1 < "$libjbig_export_patch_path"
+
+    # Rename the library to have "-sail" suffix
+    patch CMakeLists.txt -i "$libjbig_rename_patch_path"
+    sed -i "s|-ljbig|-ljbig-sail|" libjbig.pc.in
 
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
-    install -D -m 644 "../libjbig/jbig.h"    "$B/include/jbig.h"
-    install -D -m 644 "../libjbig/jbig_ar.h" "$B/include/jbig_ar.h"
+    install -D -m 644 "../libjbig/jbig.h"        "$B/include/jbig.h"
+    install -D -m 644 "../libjbig/jbig-export.h" "$B/include/jbig-export.h"
 
-    install -D -m 644 libjbig.pc             "$B/lib/pkgconfig/libjbig.pc"
+    install -D -m 644 libjbig.pc                 "$B/lib/pkgconfig/libjbig.pc"
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "$cmake_windows_build_type/jbig.lib" "$B/lib/jbig.lib"
+            install -D -m 644 "$cmake_windows_build_type/jbig-sail.lib" "$B/lib/jbig-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/jbig-sail.dll" "$B/bin/jbig-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libjbig.a" "$B/lib/libjbig.a"
+            find . -name 'libjbig-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -279,18 +325,18 @@ build_tiff()
 {
     unpack "$libtiff_path"
 
-    # ZSTD needs pthread on UNIX
-    case "$platform" in
-        Linux* | Darwin*)
-            sed -i 's|set(ZSTD_LIBRARIES ${ZSTD_LIBRARY})|set(ZSTD_LIBRARIES "${ZSTD_LIBRARY};-lpthread")|' CMakeLists.txt
-            sed -i "s|-ltiff|-ltiff -lpthread|" libtiff-4.pc.in
-        ;;
-    esac
+    # Rename the library to have "-sail" suffix
+    patch libtiff/CMakeLists.txt -i "$libtiff_rename_patch_path"
+    sed -i "s|-ltiff|-ltiff-sail|" libtiff-4.pc.in
 
     # "build" already exists in tiff-4.1.0
     mkdir bld
     cd bld
-    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=OFF -Dcxx=OFF -Djbig=OFF -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=ON -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" \
+            -DZLIB_LIBRARY="$B/lib/${shared_prefix}z-sail.${shared_ext}"                                                \
+            -DJPEG_LIBRARY="$B/lib/${shared_prefix}jpeg-sail.${shared_ext}"                                             \
+            -DJBIG_LIBRARY="$B/lib/${shared_prefix}jbig-sail.${shared_ext}" -DJBIG_INCLUDE_DIR="$B/include"             \
+            -DZSTD_LIBRARY="$B/lib/${shared_prefix}zstd-sail.${shared_ext}" -DZSTD_INCLUDE_DIR="$B/include" ..
     cmake --build . $cmake_platform_build_options
 
     # install
@@ -303,10 +349,12 @@ build_tiff()
 
     case "$platform" in
         MINGW*)
-            install -D -m 644 "libtiff/$cmake_windows_build_type/tiff.lib" "$B/lib/tiff.lib"
+            install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.lib" "$B/lib/tiff-sail.lib"
+            install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.dll" "$B/bin/tiff-sail.dll"
         ;;
         Linux* | Darwin*)
-            install -D -m 644 "libtiff/libtiff.a" "$B/lib/libtiff.a"
+            cd libtiff
+            find . -name 'libtiff-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
