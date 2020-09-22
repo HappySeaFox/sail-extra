@@ -282,9 +282,9 @@ build_jbig()
 {
     unpack "$libjbig_path"
 
-    install -D -m 644  "$libjbig_cmake_lists" "CMakeLists.txt"
-    install -D -m 644  "$libjbig_pc_in"       "libjbig.pc.in"
-    install -D -m 644  "$libjbig_export_h"    "libjbig/jbig-export.h"
+    install -D -m 644 "$libjbig_cmake_lists" "CMakeLists.txt"
+    install -D -m 644 "$libjbig_pc_in"       "libjbig.pc.in"
+    install -D -m 644 "$libjbig_export_h"    "libjbig/jbig-export.h"
 
     # Patch JBIG to export functions
     patch -p1 < "$libjbig_export_patch_path"
