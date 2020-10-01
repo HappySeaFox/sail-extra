@@ -15,7 +15,7 @@ builddir="$PWD/builddir"
 platform="$(uname)"
 
 case "$platform" in
-    MINGW*)
+    MINGW* | MSYS*)
         cmake_windows_build_type="Release"
         cmake_platform_generate_options="-A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         cmake_platform_build_options="--config $cmake_windows_build_type"
@@ -130,7 +130,7 @@ build_zlib()
     install -D -m 644 zlib.pc   "$B/lib/pkgconfig/zlib.pc"
 
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/z-sail.lib" "$B/lib/z-sail.lib"
             install -D -m 644 "$cmake_windows_build_type/z-sail.dll" "$B/bin/z-sail.dll"
         ;;
@@ -168,7 +168,7 @@ build_zstd()
     install -D -m 644 lib/libzstd.pc      "$B/lib/pkgconfig/libzstd.pc"
 
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.lib" "$B/lib/zstd-sail.lib"
             install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.dll" "$B/bin/zstd-sail.dll"
         ;;
@@ -212,7 +212,7 @@ build_jpeg()
     install -D -m 644 pkgscripts/libjpeg.pc  "$B/lib/pkgconfig/libjpeg.pc"
 
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/jpeg-sail.lib" "$B/lib/jpeg-sail.lib"
             install -D -m 644 "$cmake_windows_build_type/jpeg-sail.dll" "$B/bin/jpeg-sail.dll"
         ;;
@@ -243,7 +243,7 @@ build_png()
 
     # On Windows we have no libm
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             sed -i "s|-lm||" CMakeLists.txt
         ;;
     esac
@@ -262,7 +262,7 @@ build_png()
     install -D -m 644 libpng16.pc  "$B/lib/pkgconfig/libpng16.pc"
 
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/png-sail.lib" "$B/lib/png-sail.lib"
             install -D -m 644 "$cmake_windows_build_type/png-sail.dll" "$B/bin/png-sail.dll"
         ;;
@@ -305,7 +305,7 @@ build_jbig()
     install -D -m 644 libjbig.pc                 "$B/lib/pkgconfig/libjbig.pc"
 
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/jbig-sail.lib" "$B/lib/jbig-sail.lib"
             install -D -m 644 "$cmake_windows_build_type/jbig-sail.dll" "$B/bin/jbig-sail.dll"
         ;;
@@ -348,7 +348,7 @@ build_tiff()
     install -D -m 644 libtiff-4.pc          "$B/lib/pkgconfig/libtiff-4.pc"
 
     case "$platform" in
-        MINGW*)
+        MINGW* | MSYS*)
             install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.lib" "$B/lib/tiff-sail.lib"
             install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.dll" "$B/bin/tiff-sail.dll"
         ;;
