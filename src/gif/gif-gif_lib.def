@@ -5,10 +5,34 @@ EXPORTS
     EGifSpew
     EGifGetGifVersion
     EGifCloseFile
+    EGifPutScreenDesc
+    EGifPutImageDesc
+    EGifSetGifVersion
+    EGifPutLine
+    EGifPutPixel
+    EGifPutComment
+    EGifPutExtensionLeader
+    EGifPutExtensionBlock
+    EGifPutExtensionTrailer
+    EGifPutExtension
+    EGifPutCode
+    EGifPutCodeNext
     DGifOpenFileName
     DGifOpenFileHandle
     DGifSlurp
     DGifOpen
+    DGifGetScreenDesc
+    DGifGetRecordType
+    DGifGetImageHeader
+    DGifGetImageDesc
+    DGifGetLine
+    DGifGetPixel
+    DGifGetExtension
+    DGifGetExtensionNext
+    DGifGetCode
+    DGifGetCodeNext
+    DGifGetLZCodes
+    DGifGetGifVersion
     GifErrorString
     GifMakeMapObject
     GifFreeMapObject
@@ -19,6 +43,8 @@ EXPORTS
     GifFreeExtensions
     GifMakeSavedImage
     GifFreeSavedImages
+    ; 5.x functions for GIF89 graphics control blocks
+    DGifExtensionToGCB
     EGifGCBToExtension
     DGifSavedExtensionToGCB
     EGifGCBToSavedExtension
