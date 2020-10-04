@@ -13,7 +13,9 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 add_library(jbig
                 libjbig/jbig.c
-                libjbig/jbig_ar.c)
+                libjbig/jbig_ar.c
+                libjbig/jbig.def
+)
 
 add_definitions(-DJBIG_BUILD)
 
