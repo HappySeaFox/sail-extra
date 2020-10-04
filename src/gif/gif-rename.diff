@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2020-10-04 18:41:50.249770900 +0300
++++ CMakeLists.txt	2020-10-04 18:42:18.489810400 +0300
+@@ -31,6 +31,8 @@ endif()
+ 
+ set_target_properties(gif PROPERTIES VERSION ${LIBVER} SOVERSION ${LIBMAJOR})
+ 
++set_target_properties(gif PROPERTIES OUTPUT_NAME gif-sail)
++
+ # pkg-config integration
+ #
+ get_target_property(VERSION gif VERSION)

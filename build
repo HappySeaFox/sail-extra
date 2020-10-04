@@ -63,6 +63,13 @@ libjbig_fixes_patch_path="$SRC/jbig/jbig-fixes.diff"
 libtiff_path="$SRC/tiff/tiff-4.1.0.tar.gz"
 libtiff_rename_patch_path="$SRC/tiff/tiff-rename.diff"
 
+libgif_path="$SRC/gif/giflib-5.2.1.tar.gz"
+libgif_cmake_lists="$SRC/gif/gif-CMakeLists.txt"
+libgif_pc_in="$SRC/gif/gif-giflib.pc.in"
+libgif_gif_lib_def="$SRC/gif/gif-gif_lib.def"
+libgif_rename_patch_path="$SRC/gif/gif-rename.diff"
+libgif_fixes_patch_path="$SRC/gif/gif-fixes.diff"
+
 #################
 #  Build setup  #
 #################
@@ -360,6 +367,48 @@ build_tiff()
     cd "$ROOT"
 }
 
+#########
+#  GIF  #
+#########
+
+build_gif()
+{
+    unpack "$libgif_path"
+
+    install -D -m 644 "$libgif_cmake_lists" "CMakeLists.txt"
+    install -D -m 644 "$libgif_gif_lib_def" "gif_lib.def"
+    install -D -m 644 "$libgif_pc_in"       "giflib.pc.in"
+
+    # Rename the library to have "-sail" suffix
+    patch CMakeLists.txt -i "$libgif_rename_patch_path"
+    sed -i "s|-lgif|-lgif-sail|" giflib.pc.in
+
+    # Fix compilation issues
+    patch -p1 < "$libgif_fixes_patch_path"
+
+    mkdir build
+    cd build
+    cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    install -D -m 644 "../gif_lib.h" "$B/include/gif_lib.h"
+
+    install -D -m 644 giflib.pc      "$B/lib/pkgconfig/giflib.pc"
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "$cmake_windows_build_type/gif-sail.lib" "$B/lib/gif-sail.lib"
+            install -D -m 644 "$cmake_windows_build_type/gif-sail.dll" "$B/bin/gif-sail.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libgif-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 ###########
 #  BUILD  #
 ###########
@@ -371,6 +420,7 @@ build_jpeg
 build_png
 build_jbig
 build_tiff
+build_gif
 
 echo
 echo Success

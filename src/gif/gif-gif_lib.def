@@ -1,0 +1,24 @@
+EXPORTS
+    EGifOpenFileName
+    EGifOpenFileHandle
+    EGifOpen
+    EGifSpew
+    EGifGetGifVersion
+    EGifCloseFile
+    DGifOpenFileName
+    DGifOpenFileHandle
+    DGifSlurp
+    DGifOpen
+    GifErrorString
+    GifMakeMapObject
+    GifFreeMapObject
+    GifUnionColorMap
+    GifBitSize
+    GifApplyTranslation
+    GifAddExtensionBlock
+    GifFreeExtensions
+    GifMakeSavedImage
+    GifFreeSavedImages
+    EGifGCBToExtension
+    DGifSavedExtensionToGCB
+    EGifGCBToSavedExtension

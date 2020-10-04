@@ -8,3 +8,4 @@
 * `libjpeg-turbo`: from [https://sourceforge.net/projects/libjpeg-turbo](https://sourceforge.net/projects/libjpeg-turbo)
 * `libpng`: from [http://www.libpng.org/pub/png/libpng.html](http://www.libpng.org/pub/png/libpng.html)
 * `libtiff`: from [http://simplesystems.org/libtiff](http://simplesystems.org/libtiff)
+* `giflib`: from [https://sourceforge.net/projects/giflib](https://sourceforge.net/projects/giflib)
