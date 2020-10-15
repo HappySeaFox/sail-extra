@@ -21,6 +21,7 @@ EXPORTS
     DGifOpenFileHandle
     DGifSlurp
     DGifOpen
+    DGifCloseFile
     DGifGetScreenDesc
     DGifGetRecordType
     DGifGetImageHeader
