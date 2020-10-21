@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib/x86_64-linux-gnu
+includedir=${prefix}/include
+
+Name: giflib
+Description: GIF encoding end decoding library
+Version: 0.0.0
+Libs: -L${libdir} -lgif
+Cflags: -I${includedir}
