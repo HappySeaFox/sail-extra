@@ -1,0 +1,12 @@
+--- CMakeLists.txt.o	2020-09-24 19:43:42.000000000 +0300
++++ CMakeLists.txt	2020-11-23 15:53:58.934909400 +0300
+@@ -965,7 +965,8 @@ if(NOT DEFINED BUILD_SHARED_LIBS OR BUIL
+         set(CMAKE_SHARED_LIBRARY_NAME_WITH_VERSION 0)
+     elseif(WIN32)
+         # Creates zlib1.dll when building shared library version
+-        set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
++        #set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
++        set_target_properties(zlib PROPERTIES OUTPUT_NAME z-sail)
+     endif()
+ endif()
+ 

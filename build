@@ -40,8 +40,8 @@ esac
 
 SRC="$PWD/src"
 
-libz_path="$SRC/zlib/zlib-1.2.11.tar.gz"
-libz_rename_patch_path="$SRC/zlib/zlib-rename.diff"
+libz_path="$SRC/zlib-ng/zlib-ng-1.9.9-b1.tar.gz"
+libz_rename_patch_path="$SRC/zlib-ng/zlib-rename.diff"
 
 libzstd_path="$SRC/zstd/zstd-1.4.5.tar.gz"
 libzstd_rename_patch_path="$SRC/zstd/zstd-rename.diff"
@@ -117,10 +117,6 @@ build_zlib()
 {
     unpack "$libz_path"
 
-    # The used zlib version has a bug with not including some AMD64 instructions. Need to include inffas8664.c
-    # to fix it.
-    sed -i "s|contrib/masmx64/inffasx64.asm|contrib/masmx64/inffasx64.asm contrib/masmx64/inffas8664.c|" CMakeLists.txt
-
     # Rename the library to have "-sail" suffix
     patch CMakeLists.txt -i "$libz_rename_patch_path"
     sed -i "s|-lz|-lz-sail|" zlib.pc.in
@@ -128,7 +124,7 @@ build_zlib()
 
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DAMD64=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake $cmake_platform_generate_options -DZLIB_COMPAT=ON -DZLIB_ENABLE_TESTS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
