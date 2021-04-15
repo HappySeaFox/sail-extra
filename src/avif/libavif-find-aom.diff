@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2021-04-15 20:37:29.440127000 +0300
++++ CMakeLists.txt	2021-04-15 20:59:06.541944600 +0300
+@@ -386,7 +386,7 @@ if(AVIF_CODEC_AOM)
+     else()
+         # Check to see if aom is independently being built by the outer CMake project
+         if(NOT TARGET aom)
+-            find_package(aom REQUIRED)
++            find_library(AOM_LIBRARY aom)
+             set(AVIF_CODEC_INCLUDES ${AVIF_CODEC_INCLUDES} ${AOM_INCLUDE_DIR})
+         endif()
+         set(AVIF_CODEC_LIBRARIES ${AVIF_CODEC_LIBRARIES} ${AOM_LIBRARY})

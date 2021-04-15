@@ -70,6 +70,12 @@ libgif_gif_lib_def="$SRC/gif/gif-gif_lib.def"
 libgif_rename_patch_path="$SRC/gif/gif-rename.diff"
 libgif_fixes_patch_path="$SRC/gif/gif-fixes.diff"
 
+libaom_path="$SRC/avif/aom-3.0.0.tar.gz"
+libaom_rename_patch_path="$SRC/avif/aom-rename.diff"
+libavif_path="$SRC/avif/libavif-0.9.0.tar.gz"
+libavif_rename_patch_path="$SRC/avif/libavif-rename.diff"
+libavif_find_aom_patch_path="$SRC/avif/libavif-find-aom.diff"
+
 #################
 #  Build setup  #
 #################
@@ -385,6 +391,79 @@ build_gif()
     cd "$ROOT"
 }
 
+##########
+#  AVIF  #
+##########
+
+build_aom()
+{
+    unpack "$libaom_path"
+
+    # Rename the library to have "-sail" suffix
+    patch -p1 -i "$libaom_rename_patch_path"
+
+    mkdir bld
+    cd bld
+    cmake $cmake_platform_generate_options -DCMAKE_BUILD_TYPE=Release -DENABLE_DOCS=OFF -DENABLE_EXAMPLES=OFF -DENABLE_TESTDATA=OFF -DENABLE_TESTS=OFF \
+            -DENABLE_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    install -D -m 644 "../aom/aom.h"              "$B/include/aom/aom.h"
+    install -D -m 644 "../aom/aom_codec.h"        "$B/include/aom/aom_codec.h"
+    install -D -m 644 "../aom/aom_decoder.h"      "$B/include/aom/aom_decoder.h"
+    install -D -m 644 "../aom/aom_encoder.h"      "$B/include/aom/aom_encoder.h"
+    install -D -m 644 "../aom/aom_frame_buffer.h" "$B/include/aom/aom_frame_buffer.h"
+    install -D -m 644 "../aom/aom_image.h"        "$B/include/aom/aom_image.h"
+    install -D -m 644 "../aom/aom_integer.h"      "$B/include/aom/aom_integer.h"
+    install -D -m 644 "../aom/aomcx.h"            "$B/include/aom/aomcx.h"
+    install -D -m 644 "../aom/aomdx.h"            "$B/include/aom/aomdx.h"
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "$cmake_windows_build_type/aom-sail.lib" "$B/lib/aom.lib"
+            install -D -m 644 "$cmake_windows_build_type/aom-sail.dll" "$B/bin/aom-sail.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libaom-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
+build_avif()
+{
+    unpack "$libavif_path"
+
+    # Rename the library to have "-sail" suffix
+    patch CMakeLists.txt -i "$libavif_rename_patch_path"
+
+    # Find AOM in our location
+    patch CMakeLists.txt -i "$libavif_find_aom_patch_path"
+
+    mkdir build
+    cd build
+    cmake $cmake_platform_generate_options -DCMAKE_BUILD_TYPE=Release -DAVIF_CODEC_AOM=ON -DAOM_INCLUDE_DIR="$B/include" \
+            -DCMAKE_INSTALL_PREFIX="$B" -DCMAKE_PREFIX_PATH="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    install -D -m 644 "../include/avif/avif.h" "$B/include/avif.h"
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "$cmake_windows_build_type/avif-sail.lib" "$B/lib/avif.lib"
+            install -D -m 644 "$cmake_windows_build_type/avif-sail.dll" "$B/bin/avif-sail.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libavif-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 ###########
 #  BUILD  #
 ###########
@@ -397,6 +476,8 @@ build_png
 build_jbig
 build_tiff
 build_gif
+build_aom
+build_avif
 
 echo
 echo Success
