@@ -7,6 +7,7 @@
 cd "$(dirname "$0")"
 
 builddir="$PWD/builddir"
+download="$PWD/download"
 
 ########################
 #  Common configuation #
@@ -70,9 +71,11 @@ libgif_gif_lib_def="$SRC/gif/gif-gif_lib.def"
 libgif_rename_patch_path="$SRC/gif/gif-rename.diff"
 libgif_fixes_patch_path="$SRC/gif/gif-fixes.diff"
 
-libaom_path="$SRC/avif/aom-3.0.0.tar.gz"
+perl_url="https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-32bit-portable.zip"
+perl_size_check="154581246"
+libaom_path="$SRC/avif/aom-3.1.0.tar.gz"
 libaom_rename_patch_path="$SRC/avif/aom-rename.diff"
-libavif_path="$SRC/avif/libavif-0.9.0.tar.gz"
+libavif_path="$SRC/avif/libavif-0.9.1.tar.gz"
 libavif_rename_patch_path="$SRC/avif/libavif-rename.diff"
 libavif_find_aom_patch_path="$SRC/avif/libavif-find-aom.diff"
 
@@ -395,8 +398,42 @@ build_gif()
 #  AVIF  #
 ##########
 
+download_perl()
+{
+    local name=$(basename "$perl_url")
+    local path="$download/$name"
+
+    if [ -f "$path" ]; then
+        local perl_size=$(stat -c %s "$path")
+
+        if [ $perl_size -eq $perl_size_check ]; then
+            return
+        fi
+    fi
+
+    curl -k "$perl_url" -o "$path"
+}
+
+unpack_perl()
+{
+    local name=$(basename "$perl_url")
+    local path="$download/$name"
+
+    mkdir -p "$builddir/$name"
+    unzip "$path" -d "$builddir/$name"
+
+    export PATH="$builddir/$name/perl/bin:$PATH"
+}
+
 build_aom()
 {
+    case "$platform" in
+        MINGW* | MSYS*)
+            download_perl
+            unpack_perl
+        ;;
+    esac
+
     unpack "$libaom_path"
 
     # Rename the library to have "-sail" suffix
@@ -449,7 +486,7 @@ build_avif()
     cmake --build . $cmake_platform_build_options
 
     # install
-    install -D -m 644 "../include/avif/avif.h" "$B/include/avif.h"
+    install -D -m 644 "../include/avif/avif.h" "$B/include/avif/avif.h"
 
     case "$platform" in
         MINGW* | MSYS*)
@@ -470,13 +507,13 @@ build_avif()
 
 build_zlib
 build_zstd
+build_aom
 
 build_jpeg
 build_png
 build_jbig
 build_tiff
 build_gif
-build_aom
 build_avif
 
 echo

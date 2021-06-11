@@ -5,7 +5,7 @@
          # Check to see if aom is independently being built by the outer CMake project
          if(NOT TARGET aom)
 -            find_package(aom REQUIRED)
-+            find_library(AOM_LIBRARY aom)
++            find_library(AOM_LIBRARIES aom)
              set(AVIF_CODEC_INCLUDES ${AVIF_CODEC_INCLUDES} ${AOM_INCLUDE_DIR})
          endif()
-         set(AVIF_CODEC_LIBRARIES ${AVIF_CODEC_LIBRARIES} ${AOM_LIBRARY})
+         set(AVIF_CODEC_LIBRARIES ${AVIF_CODEC_LIBRARIES} ${AOM_LIBRARIES})
