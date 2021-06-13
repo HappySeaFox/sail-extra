@@ -9,3 +9,5 @@
 * `libpng`: from [http://www.libpng.org/pub/png/libpng.html](http://www.libpng.org/pub/png/libpng.html)
 * `libtiff`: from [http://simplesystems.org/libtiff](http://simplesystems.org/libtiff)
 * `giflib`: from [https://sourceforge.net/projects/giflib](https://sourceforge.net/projects/giflib)
+* `aom`: from [https://aomedia.googlesource.com/aom](https://aomedia.googlesource.com/aom)
+* `libavif`: from [https://github.com/AOMediaCodec/libavif.git](https://github.com/AOMediaCodec/libavif.git)
