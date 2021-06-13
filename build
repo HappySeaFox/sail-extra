@@ -91,6 +91,8 @@ export ROOT="$PWD"
 rm -rf "$B"
 rm -rf "$builddir"
 
+mkdir -p "$download"
+
 # Used both on Windows and UNIX so create it in advance
 mkdir -p "$B/lib"
 
