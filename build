@@ -41,7 +41,7 @@ esac
 
 SRC="$PWD/src"
 
-libz_path="$SRC/zlib-ng/zlib-ng-1.9.9-b1.tar.gz"
+libz_path="$SRC/zlib-ng/zlib-ng-2.0.5.tar.gz"
 libz_rename_patch_path="$SRC/zlib-ng/zlib-rename.diff"
 
 libzstd_path="$SRC/zstd/zstd-1.4.5.tar.gz"
