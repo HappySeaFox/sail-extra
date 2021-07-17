@@ -128,7 +128,7 @@ build_zlib()
 {
     unpack "$libz_path"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libz_rename_patch_path"
 
     mkdir build
@@ -142,11 +142,11 @@ build_zlib()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/z-sail.lib" "$B/lib/zlib.lib"
-            install -D -m 644 "$cmake_windows_build_type/z-sail.dll" "$B/bin/z-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-z.lib" "$B/lib/zlib.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-z.dll" "$B/bin/sail-extra-z.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libz-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-z.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -164,7 +164,7 @@ build_zstd()
     # Enable pkg-config on Windows
     sed -i "s|^if (UNIX)|if (UNIX OR WIN32)|" build/cmake/lib/CMakeLists.txt
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch build/cmake/lib/CMakeLists.txt -i "$libzstd_rename_patch_path"
 
     cd build/cmake
@@ -178,12 +178,12 @@ build_zstd()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.lib" "$B/lib/zstd.lib"
-            install -D -m 644 "lib/$cmake_windows_build_type/zstd-sail.dll" "$B/bin/zstd-sail.dll"
+            install -D -m 644 "lib/$cmake_windows_build_type/sail-extra-zstd.lib" "$B/lib/zstd.lib"
+            install -D -m 644 "lib/$cmake_windows_build_type/sail-extra-zstd.dll" "$B/bin/sail-extra-zstd.dll"
         ;;
         Linux* | Darwin*)
             cd lib
-            find . -name 'libzstd-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-zstd.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -203,7 +203,7 @@ build_jpeg()
 
     unpack "$libjpeg_path"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch sharedlib/CMakeLists.txt -i "$libjpeg_rename_patch_path"
 
     mkdir build
@@ -219,11 +219,11 @@ build_jpeg()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.lib" "$B/lib/jpeg.lib"
-            install -D -m 644 "$cmake_windows_build_type/jpeg-sail.dll" "$B/bin/jpeg-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-jpeg.lib" "$B/lib/jpeg.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-jpeg.dll" "$B/bin/sail-extra-jpeg.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libjpeg-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-jpeg.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -243,7 +243,7 @@ build_png()
     # Enable the pkg-config file
     sed -i "s|^if(NOT WIN32 OR CYGWIN OR MINGW)|if(WIN32 OR UNIX)|" CMakeLists.txt
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libpng_rename_patch_path"
 
     # On Windows we have no libm
@@ -266,11 +266,11 @@ build_png()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/png-sail.lib" "$B/lib/libpng16.lib"
-            install -D -m 644 "$cmake_windows_build_type/png-sail.dll" "$B/bin/png-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-png.lib" "$B/lib/libpng16.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-png.dll" "$B/bin/sail-extra-png.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libpng-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-png.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -292,7 +292,7 @@ build_jbig()
     # Patch JBIG to export functions
     patch -p1 < "$libjbig_fixes_patch_path"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libjbig_rename_patch_path"
 
     mkdir build
@@ -305,11 +305,11 @@ build_jbig()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/jbig-sail.lib" "$B/lib/jbig.lib"
-            install -D -m 644 "$cmake_windows_build_type/jbig-sail.dll" "$B/bin/jbig-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-jbig.lib" "$B/lib/jbig.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-jbig.dll" "$B/bin/sail-extra-jbig.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libjbig-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-jbig.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -324,7 +324,7 @@ build_tiff()
 {
     unpack "$libtiff_path"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch libtiff/CMakeLists.txt -i "$libtiff_rename_patch_path"
 
     # "build" already exists in tiff-4.1.0
@@ -345,12 +345,12 @@ build_tiff()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.lib" "$B/lib/tiff.lib"
-            install -D -m 644 "libtiff/$cmake_windows_build_type/tiff-sail.dll" "$B/bin/tiff-sail.dll"
+            install -D -m 644 "libtiff/$cmake_windows_build_type/sail-extra-tiff.lib" "$B/lib/tiff.lib"
+            install -D -m 644 "libtiff/$cmake_windows_build_type/sail-extra-tiff.dll" "$B/bin/sail-extra-tiff.dll"
         ;;
         Linux* | Darwin*)
             cd libtiff
-            find . -name 'libtiff-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-tiff.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -369,7 +369,7 @@ build_gif()
     install -D -m 644 "$libgif_gif_lib_def" "gif_lib.def"
     install -D -m 644 "$libgif_pc_in"       "giflib.pc.in"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libgif_rename_patch_path"
 
     # Fix compilation issues
@@ -385,11 +385,11 @@ build_gif()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/gif-sail.lib" "$B/lib/gif.lib"
-            install -D -m 644 "$cmake_windows_build_type/gif-sail.dll" "$B/bin/gif-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-gif.lib" "$B/lib/gif.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-gif.dll" "$B/bin/sail-extra-gif.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libgif-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-gif.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -438,7 +438,7 @@ build_aom()
 
     unpack "$libaom_path"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch -p1 -i "$libaom_rename_patch_path"
 
     mkdir bld
@@ -460,11 +460,11 @@ build_aom()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/aom-sail.lib" "$B/lib/aom.lib"
-            install -D -m 644 "$cmake_windows_build_type/aom-sail.dll" "$B/bin/aom-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-aom.lib" "$B/lib/aom.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-aom.dll" "$B/bin/sail-extra-aom.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libaom-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-aom.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 
@@ -475,7 +475,7 @@ build_avif()
 {
     unpack "$libavif_path"
 
-    # Rename the library to have "-sail" suffix
+    # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libavif_rename_patch_path"
 
     # Find AOM in our location
@@ -492,11 +492,11 @@ build_avif()
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/avif-sail.lib" "$B/lib/avif.lib"
-            install -D -m 644 "$cmake_windows_build_type/avif-sail.dll" "$B/bin/avif-sail.dll"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-avif.lib" "$B/lib/avif.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-avif.dll" "$B/bin/sail-extra-avif.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libavif-sail.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-avif.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 

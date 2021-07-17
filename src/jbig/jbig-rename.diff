@@ -4,7 +4,7 @@
                             SOVERSION 2
                             PUBLIC_HEADER "${PUBLIC_HEADERS}")
  
-+set_target_properties(jbig PROPERTIES OUTPUT_NAME jbig-sail)
++set_target_properties(jbig PROPERTIES OUTPUT_NAME sail-extra-jbig)
 +
  # Definitions, includes, link
  #

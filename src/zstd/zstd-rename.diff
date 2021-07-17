@@ -4,7 +4,7 @@
              OUTPUT_NAME zstd
              VERSION ${zstd_VERSION_MAJOR}.${zstd_VERSION_MINOR}.${zstd_VERSION_PATCH}
              SOVERSION ${zstd_VERSION_MAJOR})
-+    set_target_properties(libzstd_shared PROPERTIES OUTPUT_NAME zstd-sail)
++    set_target_properties(libzstd_shared PROPERTIES OUTPUT_NAME sail-extra-zstd)
  endif ()
  
  if (ZSTD_BUILD_STATIC)

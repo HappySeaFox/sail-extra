@@ -4,7 +4,7 @@
                            VERSION ${LIBRARY_VERSION}
                            SOVERSION ${LIBRARY_SOVERSION}
                            C_VISIBILITY_PRESET hidden)
-+set_target_properties(avif PROPERTIES OUTPUT_NAME avif-sail)
++set_target_properties(avif PROPERTIES OUTPUT_NAME sail-extra-avif)
  target_compile_definitions(avif
                             PRIVATE ${AVIF_PLATFORM_DEFINITIONS} ${AVIF_CODEC_DEFINITIONS})
  target_link_libraries(avif

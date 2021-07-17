@@ -5,7 +5,7 @@
    add_library(png SHARED ${libpng_sources})
    set(PNG_LIB_TARGETS png)
 -  set_target_properties(png PROPERTIES OUTPUT_NAME ${PNG_LIB_NAME})
-+  set_target_properties(png PROPERTIES OUTPUT_NAME png-sail)
++  set_target_properties(png PROPERTIES OUTPUT_NAME sail-extra-png)
    add_dependencies(png genfiles)
    if(MSVC)
      # msvc does not append 'lib' - do it here to have consistent name

@@ -4,7 +4,7 @@
                          "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
  endif()
  
-+set_target_properties(tiff PROPERTIES OUTPUT_NAME tiff-sail)
++set_target_properties(tiff PROPERTIES OUTPUT_NAME sail-extra-tiff)
 +
  install(TARGETS tiff
          RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}

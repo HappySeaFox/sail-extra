@@ -4,7 +4,7 @@
  
  set_target_properties(gif PROPERTIES VERSION ${LIBVER} SOVERSION ${LIBMAJOR})
  
-+set_target_properties(gif PROPERTIES OUTPUT_NAME gif-sail)
++set_target_properties(gif PROPERTIES OUTPUT_NAME sail-extra-gif)
 +
  # pkg-config integration
  #
