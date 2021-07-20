@@ -1,0 +1,10 @@
+--- CMakeLists.txt.o	2021-07-20 20:13:11.126186200 +0300
++++ CMakeLists.txt	2021-07-20 20:32:19.839196700 +0300
+@@ -242,6 +242,7 @@ set_target_properties(
+   PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/webp/decode.h;\
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/encode.h;\
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/types.h")
++set_target_properties(webp PROPERTIES OUTPUT_NAME sail-extra-webp)
+ 
+ # Make sure the OBJECT libraries are built with position independent code (it is
+ # not ON by default).

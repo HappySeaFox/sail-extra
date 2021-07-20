@@ -79,6 +79,10 @@ libavif_path="$SRC/avif/libavif-0.9.2.tar.gz"
 libavif_rename_patch_path="$SRC/avif/libavif-rename.diff"
 libavif_find_aom_patch_path="$SRC/avif/libavif-find-aom.diff"
 
+libwebp_path="$SRC/webp/libwebp-1.1.0.tar.gz"
+libwebp_rename_patch_path="$SRC/webp/webp-rename.diff"
+libwebp_export_patch_path="$SRC/webp/webp-export.diff"
+
 #################
 #  Build setup  #
 #################
@@ -503,6 +507,42 @@ build_avif()
     cd "$ROOT"
 }
 
+build_webp()
+{
+    unpack "$libwebp_path"
+
+    # Rename the library to have "sail-extra-" prefix
+    patch CMakeLists.txt -i "$libwebp_rename_patch_path"
+
+    # Export symbols
+    patch CMakeLists.txt -i "$libwebp_export_patch_path"
+
+    mkdir build
+    cd build
+
+    cmake $cmake_platform_generate_options -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DWEBP_BUILD_ANIM_UTILS=OFF -DWEBP_BUILD_CWEBP=OFF \
+            -DWEBP_BUILD_DWEBP=OFF -DWEBP_BUILD_GIF2WEBP=OFF -DWEBP_BUILD_IMG2WEBP=OFF -DWEBP_BUILD_VWEBP=OFF -DWEBP_BUILD_WEBPINFO=OFF         \
+            -DWEBP_BUILD_WEBPMUX=OFF -DWEBP_BUILD_EXTRAS=OFF -DWEBP_BUILD_WEBP_JS=OFF -DCMAKE_INSTALL_PREFIX="$B" -DCMAKE_PREFIX_PATH="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    install -D -m 644 "../src/webp/decode.h" "$B/include/webp/decode.h"
+    install -D -m 644 "../src/webp/encode.h" "$B/include/webp/encode.h"
+    install -D -m 644 "../src/webp/types.h"  "$B/include/webp/types.h"
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-webp.lib" "$B/lib/webp.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-webp.dll" "$B/bin/sail-extra-webp.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libsail-extra-webp.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 ###########
 #  BUILD  #
 ###########
@@ -517,6 +557,7 @@ build_jbig
 build_tiff
 build_gif
 build_avif
+build_webp
 
 echo
 echo Success

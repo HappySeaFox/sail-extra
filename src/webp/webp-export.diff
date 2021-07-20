@@ -1,0 +1,12 @@
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -167,6 +167,9 @@ add_definitions(-DHAVE_CONFIG_H)
+ if(MSVC)
+   # avoid security warnings for e.g., fopen() used in the examples.
+   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
++  if(BUILD_SHARED_LIBS)
++    add_definitions("-DWEBP_EXTERN=__declspec(dllexport)" "-DWEBP_DLL")
++  endif()
+ else()
+   add_definitions(-Wall)
+ endif()
