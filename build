@@ -61,7 +61,7 @@ libjbig_jbig_def="$SRC/jbig/jbig-jbig.def"
 libjbig_rename_patch_path="$SRC/jbig/jbig-rename.diff"
 libjbig_fixes_patch_path="$SRC/jbig/jbig-fixes.diff"
 
-libtiff_path="$SRC/tiff/tiff-4.1.0.tar.gz"
+libtiff_path="$SRC/tiff/tiff-4.3.0.tar.gz"
 libtiff_rename_patch_path="$SRC/tiff/tiff-rename.diff"
 
 libgif_path="$SRC/gif/giflib-5.2.1.tar.gz"
@@ -327,7 +327,7 @@ build_tiff()
     # Rename the library to have "sail-extra-" prefix
     patch libtiff/CMakeLists.txt -i "$libtiff_rename_patch_path"
 
-    # "build" already exists in tiff-4.1.0
+    # "build" already exists in tiff
     mkdir bld
     cd bld
     cmake $cmake_platform_generate_options -DBUILD_SHARED_LIBS=ON -Dcxx=OFF -DCMAKE_INSTALL_PREFIX="$B" \
