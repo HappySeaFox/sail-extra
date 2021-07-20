@@ -18,7 +18,7 @@ platform="$(uname)"
 case "$platform" in
     MINGW* | MSYS*)
         cmake_windows_build_type="Release"
-        cmake_platform_generate_options="-A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+        cmake_platform_generate_options="-A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_C_FLAGS=-MP -DCMAKE_CXX_FLAGS=-MP"
         cmake_platform_build_options="--config $cmake_windows_build_type"
         shared_prefix=""
         shared_ext="lib"
