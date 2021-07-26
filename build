@@ -526,17 +526,23 @@ build_webp()
     cmake --build . $cmake_platform_build_options
 
     # install
-    install -D -m 644 "../src/webp/decode.h" "$B/include/webp/decode.h"
-    install -D -m 644 "../src/webp/encode.h" "$B/include/webp/encode.h"
-    install -D -m 644 "../src/webp/types.h"  "$B/include/webp/types.h"
+    install -D -m 644 "../src/webp/decode.h"    "$B/include/webp/decode.h"
+    install -D -m 644 "../src/webp/demux.h"     "$B/include/webp/demux.h"
+    install -D -m 644 "../src/webp/encode.h"    "$B/include/webp/encode.h"
+    install -D -m 644 "../src/webp/mux_types.h" "$B/include/webp/mux_types.h"
+    install -D -m 644 "../src/webp/types.h"     "$B/include/webp/types.h"
 
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/sail-extra-webp.lib" "$B/lib/webp.lib"
             install -D -m 644 "$cmake_windows_build_type/sail-extra-webp.dll" "$B/bin/sail-extra-webp.dll"
+
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-webpdemux.lib" "$B/lib/webpdemux.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-webpdemux.dll" "$B/bin/sail-extra-webpdemux.dll"
         ;;
         Linux* | Darwin*)
-            find . -name 'libsail-extra-webp.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-webp.so*'      -exec cp -dp '{}' "$B/lib/{}" ';'
+            find . -name 'libsail-extra-webpdemux.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
         ;;
     esac
 

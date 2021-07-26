@@ -1,6 +1,6 @@
---- CMakeLists.txt.o	2021-07-20 20:13:11.126186200 +0300
-+++ CMakeLists.txt	2021-07-20 20:32:19.839196700 +0300
-@@ -242,6 +242,7 @@ set_target_properties(
+--- CMakeLists.txt.o	2019-12-21 16:37:43.000000000 +0300
++++ CMakeLists.txt	2021-07-26 22:25:12.530243700 +0300
+@@ -239,6 +239,7 @@ set_target_properties(
    PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/webp/decode.h;\
  ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/encode.h;\
  ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/types.h")
@@ -8,3 +8,11 @@
  
  # Make sure the OBJECT libraries are built with position independent code (it is
  # not ON by default).
+@@ -264,6 +265,7 @@ set_target_properties(
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/demux.h;\
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/mux_types.h;\
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/types.h")
++set_target_properties(webpdemux PROPERTIES OUTPUT_NAME sail-extra-webpdemux)
+ 
+ configure_pkg_config("src/demux/libwebpdemux.pc")
+ 
