@@ -83,6 +83,9 @@ libwebp_path="$SRC/webp/libwebp-1.1.0.tar.gz"
 libwebp_rename_patch_path="$SRC/webp/webp-rename.diff"
 libwebp_export_patch_path="$SRC/webp/webp-export.diff"
 
+jasper_path="$SRC/jpeg2000/jasper-2.0.33.tar.gz"
+jasper_rename_patch_path="$SRC/jpeg2000/jasper-rename.diff"
+
 #################
 #  Build setup  #
 #################
@@ -115,7 +118,7 @@ unpack()
     local build="$builddir/$name"
 
     echo
-    echo "Building $path"
+    echo "Building '$path'"
     echo
 
     rm -rf "$build"
@@ -549,6 +552,42 @@ build_webp()
     cd "$ROOT"
 }
 
+build_jpeg2000()
+{
+    unpack "$jasper_path"
+
+    # Rename the library to have "sail-extra-" prefix
+    patch src/libjasper/CMakeLists.txt -i "$jasper_rename_patch_path"
+
+    mkdir bld
+    cd bld
+
+    cmake $cmake_platform_generate_options -DCMAKE_BUILD_TYPE=Release -DJAS_ENABLE_DOC=ON -DJAS_ENABLE_DOC=OFF -DJAS_ENABLE_PROGRAMS=OFF \
+            -DCMAKE_INSTALL_PREFIX="$B" -DCMAKE_PREFIX_PATH="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    cd "src/libjasper/include/jasper"
+    find . -type f -exec install -D -m 644 '{}' "$B/include/jasper/{}" ';'
+    cd -
+
+    cd "../src/libjasper/include/jasper"
+    find . -type f -exec install -D -m 644 '{}' "$B/include/jasper/{}" ';'
+    cd -
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "src/libjasper/sail-extra-jasper.lib" "$B/lib/jasper.lib"
+            install -D -m 644 "src/libjasper/sail-extra-jasper.dll" "$B/bin/sail-extra-jasper.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libsail-extra-jasper.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 ###########
 #  BUILD  #
 ###########
@@ -564,6 +603,7 @@ build_tiff
 build_gif
 build_avif
 build_webp
+build_jpeg2000
 
 echo
 echo Success

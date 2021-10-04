@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2021-08-01 23:39:10.000000000 +0300
++++ CMakeLists.txt	2021-10-04 17:39:28.218394900 +0300
+@@ -167,7 +167,7 @@ target_include_directories(libjasper BEF
+ 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+ )
+ 
+-set_target_properties(libjasper PROPERTIES OUTPUT_NAME jasper)
++set_target_properties(libjasper PROPERTIES OUTPUT_NAME sail-extra-jasper)
+ set_target_properties(libjasper PROPERTIES LINKER_LANGUAGE C)
+ 
+ if (MSVC)
