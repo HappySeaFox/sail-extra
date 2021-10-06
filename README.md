@@ -7,6 +7,7 @@
 
 * `aom`: from [https://aomedia.googlesource.com/aom](https://aomedia.googlesource.com/aom)
 * `giflib`: from [https://sourceforge.net/projects/giflib](https://sourceforge.net/projects/giflib)
+* `jasper`: from [https://github.com/jasper-software/jasper](https://github.com/jasper-software/jasper)
 * `jbigkit`: from [https://www.cl.cam.ac.uk/~mgk25/jbigkit](https://www.cl.cam.ac.uk/~mgk25/jbigkit)
 * `libavif`: from [https://github.com/AOMediaCodec/libavif](https://github.com/AOMediaCodec/libavif)
 * `libjpeg-turbo`: from [https://sourceforge.net/projects/libjpeg-turbo](https://sourceforge.net/projects/libjpeg-turbo)
