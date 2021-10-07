@@ -14,5 +14,6 @@
 * `libpng`: from [http://www.libpng.org/pub/png/libpng.html](http://www.libpng.org/pub/png/libpng.html)
 * `libtiff`: from [http://simplesystems.org/libtiff](http://simplesystems.org/libtiff)
 * `libwebp`: from [https://github.com/webmproject/libwebp](https://github.com/webmproject/libwebp)
+* `resvg`: from [https://github.com/RazrFalcon/resvg](https://github.com/RazrFalcon/resvg)
 * `zlib-ng`: from [https://github.com/zlib-ng/zlib-ng](https://github.com/zlib-ng/zlib-ng)
 * `zstd`: from [https://github.com/facebook/zstd](https://github.com/facebook/zstd)

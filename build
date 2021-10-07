@@ -86,6 +86,10 @@ libwebp_export_patch_path="$SRC/webp/webp-export.diff"
 jasper_path="$SRC/jpeg2000/jasper-2.0.33.tar.gz"
 jasper_rename_patch_path="$SRC/jpeg2000/jasper-rename.diff"
 
+cargo_path="$SRC/svg/cargo-win-msvc.tar.gz"
+resvg_path="$SRC/svg/resvg-0.19.0.tar.xz"
+resvg_rename_patch_path="$SRC/svg/resvg-rename.diff"
+
 #################
 #  Build setup  #
 #################
@@ -111,11 +115,24 @@ if ! which pkg-config >/dev/null 2>&1; then
     exit 1
 fi
 
+ends_with()
+{
+    local path="$1"
+    local str="$2"
+
+    [ "${path#*$str}" != "$path" ]
+}
+
 unpack()
 {
     local path="$1"
     local name="$(basename "$path")"
     local build="$builddir/$name"
+
+    if [ -z "$path" ]; then
+        echo "Error: Path to archive is empty" >&2
+        exit 1
+    fi
 
     echo
     echo "Building '$path'"
@@ -124,7 +141,20 @@ unpack()
     rm -rf "$build"
     mkdir -p "$build"
     cd "$build"
-    tar -zxf "$path" --strip-components=1
+
+    # Archive-specific options z/J/other
+    local archive_option=
+
+    if ends_with "$path" ".tar.gz"; then
+        archive_option="z"
+    elif ends_with "$path" ".tar.xz"; then
+        archive_option="J"
+    else
+        echo "Error: Unsupported file extension in '$path'" >&2
+        exit 1
+    fi
+
+    tar -${archive_option}xf "$path" --strip-components=1
 }
 
 ##########
@@ -589,6 +619,35 @@ build_jpeg2000()
     cd "$ROOT"
 }
 
+build_svg()
+{
+    unpack "$cargo_path"
+    local cargo_dir_name="$(basename "$cargo_path")"
+    cd "$ROOT"
+    unpack "$resvg_path"
+
+    # Rename the library to have "sail-extra-" prefix
+    patch c-api/Cargo.toml -i "$resvg_rename_patch_path"
+
+    cd c-api
+    $builddir/${cargo_dir_name}/cargo build --release
+
+    # install
+    install -D -m 644 "resvg.h"  "$B/include/resvg.h"
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "../target/release/sail_extra_resvg.dll.lib" "$B/lib/resvg.lib"
+            install -D -m 644 "../target/release/sail_extra_resvg.dll"     "$B/bin/sail_extra_resvg.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libsail-extra-resvg.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 ###########
 #  BUILD  #
 ###########
@@ -605,6 +664,7 @@ build_gif
 build_avif
 build_webp
 build_jpeg2000
+build_svg
 
 echo
 echo Success
