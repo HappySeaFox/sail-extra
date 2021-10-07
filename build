@@ -87,7 +87,7 @@ jasper_path="$SRC/jpeg2000/jasper-2.0.33.tar.gz"
 jasper_rename_patch_path="$SRC/jpeg2000/jasper-rename.diff"
 
 cargo_path="$SRC/svg/cargo-win-msvc.tar.gz"
-resvg_path="$SRC/svg/resvg-0.19.0.tar.xz"
+resvg_path="$SRC/svg/resvg-0.19.0.tar.gz"
 resvg_rename_patch_path="$SRC/svg/resvg-rename.diff"
 
 #################
