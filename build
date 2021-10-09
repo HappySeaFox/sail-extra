@@ -86,7 +86,7 @@ libwebp_export_patch_path="$SRC/webp/webp-export.diff"
 jasper_path="$SRC/jpeg2000/jasper-2.0.33.tar.gz"
 jasper_rename_patch_path="$SRC/jpeg2000/jasper-rename.diff"
 
-cargo_path="$SRC/svg/cargo-win-msvc.tar.gz"
+rustup_path="$SRC/svg/rustup-init.exe"
 resvg_path="$SRC/svg/resvg-0.19.0.tar.gz"
 resvg_rename_patch_path="$SRC/svg/resvg-rename.diff"
 
@@ -621,16 +621,15 @@ build_jpeg2000()
 
 build_svg()
 {
-    unpack "$cargo_path"
-    local cargo_dir_name="$(basename "$cargo_path")"
-    cd "$ROOT"
+    ${rustup_path} -y --no-modify-path --default-host x86_64-pc-windows-msvc --default-toolchain stable --profile minimal
+
     unpack "$resvg_path"
 
     # Rename the library to have "sail-extra-" prefix
     patch c-api/Cargo.toml -i "$resvg_rename_patch_path"
 
     cd c-api
-    $builddir/${cargo_dir_name}/cargo build --release
+    ${USERPROFILE}/.cargo/bin/cargo build --release
 
     # install
     install -D -m 644 "resvg.h"  "$B/include/resvg.h"

@@ -6,6 +6,7 @@
 # Extra libs for SAIL needed on specific platforms
 
 * `aom`: from [https://aomedia.googlesource.com/aom](https://aomedia.googlesource.com/aom)
+* `rustup`: from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)
 * `giflib`: from [https://sourceforge.net/projects/giflib](https://sourceforge.net/projects/giflib)
 * `jasper`: from [https://github.com/jasper-software/jasper](https://github.com/jasper-software/jasper)
 * `jbigkit`: from [https://www.cl.cam.ac.uk/~mgk25/jbigkit](https://www.cl.cam.ac.uk/~mgk25/jbigkit)
