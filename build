@@ -458,8 +458,10 @@ unpack_perl()
     local name=$(basename "$perl_url")
     local path="$download/$name"
 
+    echo "Unpacking perl '$path'"
+
     mkdir -p "$builddir/$name"
-    unzip "$path" -d "$builddir/$name"
+    unzip -q "$path" -d "$builddir/$name"
 
     export PATH="$builddir/$name/perl/bin:$PATH"
 }
