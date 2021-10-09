@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2021-10-09 11:51:52.848709300 +0300
++++ CMakeLists.txt	2021-10-09 11:57:25.449175000 +0300
+@@ -573,7 +573,7 @@ endif()
+ 
+ set_target_properties(raw_r PROPERTIES VERSION     ${RAW_LIB_SO_VERSION_STRING})
+ set_target_properties(raw_r PROPERTIES SOVERSION   ${RAW_LIB_SO_CUR_VERSION})
+-set_target_properties(raw_r PROPERTIES OUTPUT_NAME "raw_r")
++set_target_properties(raw_r PROPERTIES OUTPUT_NAME "sail-extra-raw_r")
+ set_target_properties(raw_r PROPERTIES COMPILE_PDB_NAME "raw_r")
+ 
+ # -- Files to install -------------------------------------------------------------------------------------

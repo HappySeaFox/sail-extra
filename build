@@ -90,6 +90,10 @@ rustup_path="$SRC/svg/rustup-init.exe"
 resvg_path="$SRC/svg/resvg-0.19.0.tar.gz"
 resvg_rename_patch_path="$SRC/svg/resvg-rename.diff"
 
+libraw_path="$SRC/raw/LibRaw-0.20.2.tar.gz"
+libraw_cmake_path="$SRC/raw/libraw-cmake-20211009.zip"
+libraw_rename_patch_path="$SRC/raw/libraw-rename.diff"
+
 #################
 #  Build setup  #
 #################
@@ -649,6 +653,39 @@ build_svg()
     cd "$ROOT"
 }
 
+build_raw()
+{
+    unpack "$libraw_path"
+
+    unzip -o -q "$libraw_cmake_path"
+
+    # Rename the library to have "sail-extra-" prefix
+    patch CMakeLists.txt -i "$libraw_rename_patch_path"
+
+    mkdir build
+    cd build
+
+    cmake $cmake_platform_generate_options -DCMAKE_BUILD_TYPE=Release -DENABLE_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX="$B" -DCMAKE_PREFIX_PATH="$B" ..
+    cmake --build . $cmake_platform_build_options
+
+    # install
+    cd "../libraw"
+    find . -type f -exec install -D -m 644 '{}' "$B/include/libraw/{}" ';'
+    cd -
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-raw_r.lib" "$B/lib/raw_r.lib"
+            install -D -m 644 "$cmake_windows_build_type/sail-extra-raw_r.dll" "$B/bin/sail-extra-raw_r.dll"
+        ;;
+        Linux* | Darwin*)
+            find . -name 'libsail-extra-raw_r.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 ###########
 #  BUILD  #
 ###########
@@ -666,6 +703,7 @@ build_avif
 build_webp
 build_jpeg2000
 build_svg
+build_raw
 
 echo
 echo Success

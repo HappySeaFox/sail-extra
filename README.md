@@ -13,6 +13,7 @@
 * `libavif`: from [https://github.com/AOMediaCodec/libavif](https://github.com/AOMediaCodec/libavif)
 * `libjpeg-turbo`: from [https://sourceforge.net/projects/libjpeg-turbo](https://sourceforge.net/projects/libjpeg-turbo)
 * `libpng`: from [http://www.libpng.org/pub/png/libpng.html](http://www.libpng.org/pub/png/libpng.html)
+* `libraw`: from [https://github.com/LibRaw/LibRaw](https://github.com/LibRaw/LibRaw)
 * `libtiff`: from [http://simplesystems.org/libtiff](http://simplesystems.org/libtiff)
 * `libwebp`: from [https://github.com/webmproject/libwebp](https://github.com/webmproject/libwebp)
 * `resvg`: from [https://github.com/RazrFalcon/resvg](https://github.com/RazrFalcon/resvg)
