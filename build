@@ -47,6 +47,7 @@ SRC="$PWD/src"
 
 libz_path="$SRC/zlib-ng/zlib-ng-2.0.5.tar.gz"
 libz_rename_patch_path="$SRC/zlib-ng/zlib-rename.diff"
+libz_remove_postfix_patch_path="""$SRC/zlib-ng/zlib-remove-postfix.diff"
 
 libzstd_path="$SRC/zstd/zstd-1.4.9.tar.gz"
 libzstd_rename_patch_path="$SRC/zstd/zstd-rename.diff"
@@ -57,6 +58,7 @@ libjpeg_rename_patch_path="$SRC/jpeg/libjpeg-turbo-rename.diff"
 libpng_path="$SRC/png/libpng-1.6.37.tar.gz"
 libapng_patch_path="$SRC/png/libpng-1.6.37-apng.patch"
 libpng_rename_patch_path="$SRC/png/libpng-rename.diff"
+libpng_remove_postfix_patch_path="$SRC/png/libpng-remove-postfix.diff"
 
 libjbig_path="$SRC/jbig/jbigkit-2.1.tar.gz"
 libjbig_cmake_lists="$SRC/jbig/jbig-CMakeLists.txt"
@@ -67,6 +69,7 @@ libjbig_fixes_patch_path="$SRC/jbig/jbig-fixes.diff"
 
 libtiff_path="$SRC/tiff/tiff-4.3.0.tar.gz"
 libtiff_rename_patch_path="$SRC/tiff/tiff-rename.diff"
+libtiff_remove_postfix_patch_path="$SRC/tiff/tiff-remove-postfix.diff"
 
 libgif_path="$SRC/gif/giflib-5.2.1.tar.gz"
 libgif_cmake_lists="$SRC/gif/gif-CMakeLists.txt"
@@ -176,6 +179,9 @@ build_zlib()
 
     # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libz_rename_patch_path"
+
+    # Remove debug postfix
+    patch CMakeLists.txt -i "$libz_remove_postfix_patch_path"
 
     mkdir build
     cd build
@@ -292,6 +298,9 @@ build_png()
     # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libpng_rename_patch_path"
 
+    # Remove debug postfix
+    patch CMakeLists.txt -i "$libpng_remove_postfix_patch_path"
+
     # On Windows we have no libm
     case "$platform" in
         MINGW* | MSYS*)
@@ -372,6 +381,9 @@ build_tiff()
 
     # Rename the library to have "sail-extra-" prefix
     patch libtiff/CMakeLists.txt -i "$libtiff_rename_patch_path"
+
+    # Remove debug postfix
+    patch cmake/WindowsSupport.cmake -i "$libtiff_remove_postfix_patch_path"
 
     # "build" already exists in tiff
     mkdir bld
@@ -670,7 +682,7 @@ build_raw()
     mkdir build
     cd build
 
-    cmake $cmake_platform_generate_options -DENABLE_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX="$B" -DCMAKE_PREFIX_PATH="$B" ..
+    cmake $cmake_platform_generate_options -DCMAKE_DEBUG_POSTFIX="" -DENABLE_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX="$B" -DCMAKE_PREFIX_PATH="$B" ..
     cmake --build . $cmake_platform_build_options
 
     # install
