@@ -1,0 +1,11 @@
+--- FindJBIG.cmake.o	2021-03-10 13:56:56.000000000 +0300
++++ FindJBIG.cmake	2021-10-15 14:04:46.855831200 +0300
+@@ -110,7 +110,7 @@ if(JBIG_FOUND)
+ 
+         if(NOT JBIG_LIBRARY_RELEASE AND NOT JBIG_LIBRARY_DEBUG)
+             set_target_properties(JBIG::JBIG PROPERTIES
+-                    IMPORTED_LOCATION_RELEASE "${JBIG_LIBRARY}")
++                    IMPORTED_LOCATION "${JBIG_LIBRARY}")
+         endif()
+     endif()
+ endif()

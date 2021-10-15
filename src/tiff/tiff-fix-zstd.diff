@@ -1,0 +1,11 @@
+--- FindZSTD.cmake.o	2021-03-07 14:32:24.000000000 +0300
++++ FindZSTD.cmake	2021-10-15 14:07:22.667049400 +0300
+@@ -101,7 +101,7 @@ if(ZSTD_FOUND)
+ 
+         if(NOT ZSTD_LIBRARY_RELEASE AND NOT ZSTD_LIBRARY_DEBUG)
+             set_target_properties(ZSTD::ZSTD PROPERTIES
+-                    IMPORTED_LOCATION_RELEASE "${ZSTD_LIBRARY}")
++                    IMPORTED_LOCATION "${ZSTD_LIBRARY}")
+         endif()
+     endif()
+ endif()

@@ -70,6 +70,8 @@ libjbig_fixes_patch_path="$SRC/jbig/jbig-fixes.diff"
 libtiff_path="$SRC/tiff/tiff-4.3.0.tar.gz"
 libtiff_rename_patch_path="$SRC/tiff/tiff-rename.diff"
 libtiff_remove_postfix_patch_path="$SRC/tiff/tiff-remove-postfix.diff"
+libtiff_fix_jbig_patch_path="$SRC/tiff/tiff-fix-jbig.diff"
+libtiff_fix_zstd_patch_path="$SRC/tiff/tiff-fix-zstd.diff"
 
 libgif_path="$SRC/gif/giflib-5.2.1.tar.gz"
 libgif_cmake_lists="$SRC/gif/gif-CMakeLists.txt"
@@ -384,6 +386,10 @@ build_tiff()
 
     # Remove debug postfix
     patch cmake/WindowsSupport.cmake -i "$libtiff_remove_postfix_patch_path"
+
+    # Fix linking targets (bug in tiff)
+    patch cmake/FindJBIG.cmake -i "$libtiff_fix_jbig_patch_path"
+    patch cmake/FindZSTD.cmake -i "$libtiff_fix_zstd_patch_path"
 
     # "build" already exists in tiff
     mkdir bld
