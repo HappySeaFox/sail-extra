@@ -720,7 +720,7 @@ build_avif
 build_webp
 build_jpeg2000
 build_svg
-build_raw
+#build_raw
 
 echo
 echo Success
