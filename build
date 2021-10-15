@@ -105,6 +105,7 @@ export B="$PWD/B"
 export ROOT="$PWD"
 
 # Clean old builds
+echo "Cleaning build directory..." >&2
 rm -rf "$B"
 rm -rf "$builddir"
 
