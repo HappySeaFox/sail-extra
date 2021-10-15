@@ -11,6 +11,8 @@ download="$PWD/download"
 
 CMAKE_BUILD_TYPE="${1:-Release}"
 
+echo "Build type: $CMAKE_BUILD_TYPE"
+
 ########################
 #  Common configuation #
 ########################
@@ -105,7 +107,7 @@ export B="$PWD/B"
 export ROOT="$PWD"
 
 # Clean old builds
-echo "Cleaning build directory..." >&2
+echo "Cleaning build directory..."
 rm -rf "$B"
 rm -rf "$builddir"
 
