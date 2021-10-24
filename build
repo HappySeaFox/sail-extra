@@ -194,6 +194,8 @@ build_zlib()
     install -D -m 644 zconf.h   "$B/include/zconf.h"
     install -D -m 644 ../zlib.h "$B/include/zlib.h"
 
+    install -D -m 644 ../LICENSE.md "$B/share/sail/licenses/zlib-ng.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/sail-extra-z.lib" "$B/lib/zlib.lib"
@@ -229,6 +231,8 @@ build_zstd()
 
     # install
     install -D -m 644 ../../../lib/zstd.h "$B/include/zstd.h"
+
+    install -D -m 644 ../../../LICENSE "$B/share/sail/licenses/zstd.txt"
 
     case "$platform" in
         MINGW* | MSYS*)
@@ -270,6 +274,8 @@ build_jpeg()
     install -D -m 644 ../jerror.h   "$B/include/jerror.h"
     install -D -m 644 ../jmorecfg.h "$B/include/jmorecfg.h"
     install -D -m 644 ../jpeglib.h  "$B/include/jpeglib.h"
+
+    install -D -m 644 ../LICENSE.md "$B/share/sail/licenses/libjpeg-turbo.txt"
 
     case "$platform" in
         MINGW* | MSYS*)
@@ -321,6 +327,8 @@ build_png()
     install -D -m 644 ../png.h     "$B/include/png.h"
     install -D -m 644 ../pngconf.h "$B/include/pngconf.h"
 
+    install -D -m 644 ../LICENSE "$B/share/sail/licenses/libpng.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/sail-extra-png.lib" "$B/lib/libpng16.lib"
@@ -359,6 +367,8 @@ build_jbig()
 
     # install
     install -D -m 644 "../libjbig/jbig.h" "$B/include/jbig.h"
+
+    install -D -m 644 ../COPYING "$B/share/sail/licenses/jbig.txt"
 
     case "$platform" in
         MINGW* | MSYS*)
@@ -407,6 +417,8 @@ build_tiff()
     install -D -m 644 ../libtiff/tiffio.h   "$B/include/tiffio.h"
     install -D -m 644 ../libtiff/tiffvers.h "$B/include/tiffvers.h"
 
+    install -D -m 644 ../COPYRIGHT "$B/share/sail/licenses/tiff.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "libtiff/$cmake_windows_build_type/sail-extra-tiff.lib" "$B/lib/tiff.lib"
@@ -446,6 +458,8 @@ build_gif()
 
     # install
     install -D -m 644 "../gif_lib.h" "$B/include/gif_lib.h"
+
+    install -D -m 644 ../COPYING "$B/share/sail/licenses/giflib.txt"
 
     case "$platform" in
         MINGW* | MSYS*)
@@ -524,6 +538,8 @@ build_aom()
     install -D -m 644 "../aom/aomcx.h"            "$B/include/aom/aomcx.h"
     install -D -m 644 "../aom/aomdx.h"            "$B/include/aom/aomdx.h"
 
+    install -D -m 644 ../LICENSE "$B/share/sail/licenses/aom.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/sail-extra-aom.lib" "$B/lib/aom.lib"
@@ -556,6 +572,8 @@ build_avif()
     # install
     install -D -m 644 "../include/avif/avif.h" "$B/include/avif/avif.h"
 
+    install -D -m 644 ../LICENSE "$B/share/sail/licenses/libavif.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/sail-extra-avif.lib" "$B/lib/avif.lib"
@@ -568,6 +586,10 @@ build_avif()
 
     cd "$ROOT"
 }
+
+##########
+#  WEBP  #
+##########
 
 build_webp()
 {
@@ -594,6 +616,8 @@ build_webp()
     install -D -m 644 "../src/webp/mux_types.h" "$B/include/webp/mux_types.h"
     install -D -m 644 "../src/webp/types.h"     "$B/include/webp/types.h"
 
+    install -D -m 644 ../COPYING "$B/share/sail/licenses/libwebp.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "$cmake_windows_build_type/sail-extra-webp.lib" "$B/lib/webp.lib"
@@ -610,6 +634,10 @@ build_webp()
 
     cd "$ROOT"
 }
+
+##############
+#  JPEG2000  #
+##############
 
 build_jpeg2000()
 {
@@ -635,6 +663,8 @@ build_jpeg2000()
     find . -type f -exec install -D -m 644 '{}' "$B/include/jasper/{}" ';'
     cd -
 
+    install -D -m 644 ../LICENSE "$B/share/sail/licenses/jasper.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "src/libjasper/sail-extra-jasper.lib" "$B/lib/jasper.lib"
@@ -647,6 +677,10 @@ build_jpeg2000()
 
     cd "$ROOT"
 }
+
+#########
+#  SVG  #
+#########
 
 build_svg()
 {
@@ -663,6 +697,8 @@ build_svg()
     # install
     install -D -m 644 "resvg.h"  "$B/include/resvg.h"
 
+    install -D -m 644 ../LICENSE.txt "$B/share/sail/licenses/resvg.txt"
+
     case "$platform" in
         MINGW* | MSYS*)
             install -D -m 644 "../target/release/sail_extra_resvg.dll.lib" "$B/lib/resvg.lib"
@@ -675,6 +711,10 @@ build_svg()
 
     cd "$ROOT"
 }
+
+#########
+#  RAW  #
+#########
 
 build_raw()
 {
@@ -695,6 +735,8 @@ build_raw()
     cd "../libraw"
     find . -type f -exec install -D -m 644 '{}' "$B/include/libraw/{}" ';'
     cd -
+
+    install -D -m 644 ../LICENSE.CDDL "$B/share/sail/licenses/libraw.txt"
 
     case "$platform" in
         MINGW* | MSYS*)
