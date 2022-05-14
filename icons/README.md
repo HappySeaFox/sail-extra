@@ -1,0 +1,1 @@
+Possible colors compilations for MIME type icons for SAIL codecs.
