@@ -554,8 +554,9 @@ build_webp()
 
     case "$platform" in
         MINGW* | MSYS*)
-            mv "$B/lib/sail-extra-webp.lib"      "$B/lib/webp.lib"
-            mv "$B/lib/sail-extra-webpdemux.lib" "$B/lib/webpdemux.lib"
+            mv "$B/lib/sail-extra-webpdecoder.lib" "$B/lib/webpdecoder.lib"
+            mv "$B/lib/sail-extra-webp.lib"        "$B/lib/webp.lib"
+            mv "$B/lib/sail-extra-webpdemux.lib"   "$B/lib/webpdemux.lib"
         ;;
     esac
 
