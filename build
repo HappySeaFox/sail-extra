@@ -552,14 +552,6 @@ build_webp()
     # Ship license
     install -D -m 644 ../COPYING "$B/share/sail/licenses/libwebp.txt"
 
-    case "$platform" in
-        MINGW* | MSYS*)
-            mv "$B/lib/sail-extra-webpdecoder.lib" "$B/lib/webpdecoder.lib"
-            mv "$B/lib/sail-extra-webp.lib"        "$B/lib/webp.lib"
-            mv "$B/lib/sail-extra-webpdemux.lib"   "$B/lib/webpdemux.lib"
-        ;;
-    esac
-
     cd "$ROOT"
 }
 
