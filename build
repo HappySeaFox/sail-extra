@@ -112,6 +112,11 @@ libraw_path="$SRC/raw/LibRaw-0.20.2.tar.gz"
 libraw_cmake_path="$SRC/raw/libraw-cmake-20211009.zip"
 libraw_rename_patch_path="$SRC/raw/libraw-rename.diff"
 
+libjxl_path="$SRC/jpegxl/libjxl.with.submodules.2023.10.09.git.tar.gz"
+brotli_rename_patch_path="$SRC/jpegxl/brotli-rename.diff"
+libjxl_rename_patch_path="$SRC/jpegxl/jxl-rename.diff"
+libjxl_threads_rename_patch_path="$SRC/jpegxl/jxl_threads-rename.diff"
+
 #################
 #  Build setup  #
 #################
@@ -621,6 +626,44 @@ build_svg()
     cd "$ROOT"
 }
 
+############
+#  JPEGXL  #
+############
+
+build_jpegxl()
+{
+    unpack "$libjxl_path"
+
+    # Rename the library to have "sail-extra-" prefix
+    patch third_party/brotli/CMakeLists.txt -i "$brotli_rename_patch_path"
+    patch lib/jxl.cmake                     -i "$libjxl_rename_patch_path"
+    patch lib/jxl_threads.cmake             -i "$libjxl_threads_rename_patch_path"
+
+    mkdir build
+    cd build
+
+    cmake $cmake_platform_generate_options -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_TOOLS=OFF          \
+            -DJPEGXL_ENABLE_JPEGLI=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF \
+            -DJPEGXL_ENABLE_DOXYGEN=OFF -DJPEGXL_ENABLE_SJPEG=OFF -DJPEGXL_ENABLE_OPENEXR=OFF     \
+            -DJPEGXL_BUNDLE_LIBPNG=OFF ..
+    cmake --build . $cmake_platform_build_options --target install
+
+    # Ship license
+    install -D -m 644 ../LICENSE "$B/share/sail/licenses/libjxl.txt"
+
+    case "$platform" in
+        MINGW* | MSYS*)
+            mv "$B/lib/sail-extra-brotlicommon.lib" "$B/lib/brotlicommon.lib"
+            mv "$B/lib/sail-extra-brotlidec.lib"    "$B/lib/brotlidec.lib"
+            mv "$B/lib/sail-extra-brotlienc.lib"    "$B/lib/brotlienc.lib"
+            mv "$B/lib/sail-extra-jxl.lib"          "$B/lib/jxl.lib"
+            mv "$B/lib/sail-extra-jxl_threads.lib"  "$B/lib/jxl_threads.lib"
+        ;;
+    esac
+
+    cd "$ROOT"
+}
+
 #########
 #  RAW  #
 #########
@@ -669,6 +712,7 @@ build_avif
 build_webp
 build_jpeg2000
 build_svg
+build_jpegxl
 #build_raw
 
 echo

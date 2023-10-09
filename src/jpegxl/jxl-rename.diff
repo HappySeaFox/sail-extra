@@ -1,0 +1,10 @@
+--- jxl.cmake.o	2023-10-09 17:09:22.220670900 +0300
++++ jxl.cmake	2023-10-09 17:46:29.603764800 +0300
+@@ -239,6 +239,7 @@ target_link_libraries(jxl PUBLIC ${JPEGX
+ target_link_libraries(jxl PRIVATE ${JPEGXL_INTERNAL_SHARED_LIBS})
+ # Shared library include path contains only the "include/" paths.
+ set_target_properties(jxl PROPERTIES
++  OUTPUT_NAME sail-extra-jxl
+   VERSION ${JPEGXL_LIBRARY_VERSION}
+   SOVERSION ${JPEGXL_LIBRARY_SOVERSION}
+   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"

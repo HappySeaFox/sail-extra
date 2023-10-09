@@ -1,0 +1,11 @@
+--- CMakeLists.txt.o	2023-10-09 17:10:30.430765000 +0300
++++ CMakeLists.txt	2023-10-09 18:11:19.659897400 +0300
+@@ -173,7 +173,7 @@ if(BUILD_SHARED_LIBS)
+   foreach(lib ${BROTLI_LIBRARIES_CORE})
+     target_compile_definitions(${lib} PUBLIC "BROTLI_SHARED_COMPILATION" )
+     string(TOUPPER "${lib}" LIB)
+-    set_target_properties (${lib} PROPERTIES DEFINE_SYMBOL "${LIB}_SHARED_COMPILATION")
++    set_target_properties (${lib} PROPERTIES DEFINE_SYMBOL "${LIB}_SHARED_COMPILATION" OUTPUT_NAME sail-extra-${lib})
+   endforeach()
+ endif()
+ 

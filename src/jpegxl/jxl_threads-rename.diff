@@ -1,0 +1,10 @@
+--- jxl_threads.cmake.o	2023-10-09 17:09:22.360671100 +0300
++++ jxl_threads.cmake	2023-10-09 17:47:40.613862800 +0300
+@@ -60,6 +60,7 @@ add_library(jxl_threads SHARED ${JPEGXL_
+ _set_jxl_threads(jxl_threads)
+ 
+ set_target_properties(jxl_threads PROPERTIES
++  OUTPUT_NAME sail-extra-jxl_threads
+   VERSION ${JPEGXL_LIBRARY_VERSION}
+   SOVERSION ${JPEGXL_LIBRARY_SOVERSION}
+   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
