@@ -715,6 +715,10 @@ build_svg
 build_jpegxl
 #build_raw
 
+# Remove executables possibly built by libraries
+#
+find "$B/bin" -name '*.exe' -print -delete
+
 echo
 echo Success
 echo
