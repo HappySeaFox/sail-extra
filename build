@@ -644,8 +644,7 @@ build_jpegxl()
 
     cmake $cmake_platform_generate_options -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_TOOLS=OFF          \
             -DJPEGXL_ENABLE_JPEGLI=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF \
-            -DJPEGXL_ENABLE_DOXYGEN=OFF -DJPEGXL_ENABLE_SJPEG=OFF -DJPEGXL_ENABLE_OPENEXR=OFF     \
-            -DJPEGXL_BUNDLE_LIBPNG=OFF ..
+            -DJPEGXL_ENABLE_DOXYGEN=OFF ..
     cmake --build . $cmake_platform_build_options --target install
 
     # Ship license
