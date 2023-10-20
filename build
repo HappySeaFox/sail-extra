@@ -61,7 +61,7 @@ libz_remove_postfix_patch_path="""$SRC/zlib-ng/zlib-remove-postfix.diff"
 libzstd_path="$SRC/zstd/zstd-1.4.9.tar.gz"
 libzstd_rename_patch_path="$SRC/zstd/zstd-rename.diff"
 
-libjpeg_path="$SRC/jpeg/libjpeg-turbo-2.0.6.tar.gz"
+libjpeg_path="$SRC/jpeg/libjpeg-turbo-2.1.5.1.tar.gz"
 libjpeg_rename_patch_path="$SRC/jpeg/libjpeg-turbo-rename.diff"
 
 libpng_path="$SRC/png/libpng-1.6.37.tar.gz"
