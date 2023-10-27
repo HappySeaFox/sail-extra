@@ -105,7 +105,7 @@ jasper_path="$SRC/jpeg2000/jasper-2.0.33.tar.gz"
 jasper_rename_patch_path="$SRC/jpeg2000/jasper-rename.diff"
 
 rustup_path="$SRC/svg/rustup-init.exe"
-resvg_path="$SRC/svg/resvg-0.19.0.tar.gz"
+resvg_path="$SRC/svg/resvg-0.36.0.tar.gz"
 resvg_rename_patch_path="$SRC/svg/resvg-rename.diff"
 
 libraw_path="$SRC/raw/LibRaw-0.20.2.tar.gz"
@@ -602,21 +602,21 @@ build_svg()
     unpack "$resvg_path"
 
     # Rename the library to have "sail-extra-" prefix
-    patch c-api/Cargo.toml -i "$resvg_rename_patch_path"
+    patch crates/c-api/Cargo.toml -i "$resvg_rename_patch_path"
 
-    cd c-api
+    cd crates/c-api
     ${USERPROFILE}/.cargo/bin/cargo build --release
 
     # Install
     install -D -m 644 "resvg.h"  "$B/include/resvg.h"
 
     # Ship license
-    install -D -m 644 ../LICENSE.txt "$B/share/sail/licenses/resvg.txt"
+    install -D -m 644 ../../LICENSE.txt "$B/share/sail/licenses/resvg.txt"
 
     case "$platform" in
         MINGW* | MSYS*)
-            install -D -m 644 "../target/release/sail_extra_resvg.dll.lib" "$B/lib/resvg.lib"
-            install -D -m 644 "../target/release/sail_extra_resvg.dll"     "$B/bin/sail_extra_resvg.dll"
+            install -D -m 644 "../../target/release/sail_extra_resvg.dll.lib" "$B/lib/resvg.lib"
+            install -D -m 644 "../../target/release/sail_extra_resvg.dll"     "$B/bin/sail_extra_resvg.dll"
         ;;
         Linux* | Darwin*)
             find . -name 'libsail-extra-resvg.so*' -exec cp -dp '{}' "$B/lib/{}" ';'

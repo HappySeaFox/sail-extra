@@ -1,17 +1,16 @@
---- Cargo.toml.o	2021-10-04 12:21:32.000000000 +0300
-+++ Cargo.toml	2021-10-06 18:47:13.953830300 +0300
+--- Cargo.toml.o	2023-10-27 17:02:46.983895100 +0300
++++ Cargo.toml	2023-10-27 17:04:50.224109900 +0300
 @@ -1,5 +1,5 @@
  [package]
 -name = "resvg-capi"
 +name = "sail-extra-resvg"
- version = "0.19.0"
+ version = "0.36.0"
  authors = ["Yevhenii Reizner <razrfalcon@gmail.com>"]
  keywords = ["svg", "render", "raster", "c-api"]
-@@ -8,9 +8,8 @@ edition = "2018"
- workspace = ".."
- 
+@@ -10,7 +10,7 @@ workspace = "../.."
  [lib]
 -name = "resvg"
++name = "sail_extra_resvg"
  path = "lib.rs"
 -crate-type = ["cdylib", "staticlib"]
 +crate-type = ["cdylib"]
