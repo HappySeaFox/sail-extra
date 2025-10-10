@@ -35,7 +35,7 @@ case "$platform" in
     ;;
     Linux* | Darwin*)
         cmake_platform_generate_options="$cmake_common_generate_options"
-        cmake_platform_build_options=""
+        cmake_platform_build_options="-j2"
         shared_prefix="lib"
         shared_ext="so"
     ;;
@@ -89,13 +89,8 @@ libgif_gif_lib_def="$SRC/gif/gif-gif_lib.def"
 libgif_rename_patch_path="$SRC/gif/gif-rename.diff"
 libgif_fixes_patch_path="$SRC/gif/gif-fixes.diff"
 
-perl_url="https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-32bit-portable.zip"
-perl_size_check="154581246"
-libaom_path="$SRC/avif/aom-3.1.2.tar.gz"
-libaom_rename_patch_path="$SRC/avif/aom-rename.diff"
-libavif_path="$SRC/avif/libavif-0.9.2.tar.gz"
+libavif_path="$SRC/avif/libavif-1.1.1.tar.gz"
 libavif_rename_patch_path="$SRC/avif/libavif-rename.diff"
-libavif_find_aom_patch_path="$SRC/avif/libavif-find-aom.diff"
 
 libwebp_path="$SRC/webp/libwebp-1.1.0.tar.gz"
 libwebp_rename_patch_path="$SRC/webp/webp-rename.diff"
@@ -435,82 +430,6 @@ build_gif()
 #  AVIF  #
 ##########
 
-download_perl()
-{
-    local name=$(basename "$perl_url")
-    local path="$download/$name"
-
-    if [ -f "$path" ]; then
-        local perl_size=$(stat -c %s "$path")
-
-        if [ $perl_size -eq $perl_size_check ]; then
-            return
-        fi
-    fi
-
-    curl -k "$perl_url" -o "$path"
-}
-
-unpack_perl()
-{
-    local name=$(basename "$perl_url")
-    local path="$download/$name"
-
-    echo "Unpacking perl '$path'"
-
-    mkdir -p "$builddir/$name"
-    unzip -q "$path" -d "$builddir/$name"
-
-    export PATH="$builddir/$name/perl/bin:$PATH"
-}
-
-build_aom()
-{
-    case "$platform" in
-        MINGW* | MSYS*)
-            download_perl
-            unpack_perl
-        ;;
-    esac
-
-    unpack "$libaom_path"
-
-    # Rename the library to have "sail-extra-" prefix
-    patch -p1 -i "$libaom_rename_patch_path"
-
-    mkdir bld
-    cd bld
-    cmake $cmake_platform_generate_options -DENABLE_DOCS=OFF -DENABLE_EXAMPLES=OFF -DENABLE_TESTDATA=OFF -DENABLE_TESTS=OFF \
-            -DENABLE_TOOLS=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="$B" ..
-    cmake --build . $cmake_platform_build_options
-
-    # AOM still has no CMake installation rules
-    install -D -m 644 "../aom/aom.h"              "$B/include/aom/aom.h"
-    install -D -m 644 "../aom/aom_codec.h"        "$B/include/aom/aom_codec.h"
-    install -D -m 644 "../aom/aom_decoder.h"      "$B/include/aom/aom_decoder.h"
-    install -D -m 644 "../aom/aom_encoder.h"      "$B/include/aom/aom_encoder.h"
-    install -D -m 644 "../aom/aom_frame_buffer.h" "$B/include/aom/aom_frame_buffer.h"
-    install -D -m 644 "../aom/aom_image.h"        "$B/include/aom/aom_image.h"
-    install -D -m 644 "../aom/aom_integer.h"      "$B/include/aom/aom_integer.h"
-    install -D -m 644 "../aom/aomcx.h"            "$B/include/aom/aomcx.h"
-    install -D -m 644 "../aom/aomdx.h"            "$B/include/aom/aomdx.h"
-
-    # Ship license
-    install -D -m 644 ../LICENSE "$B/share/sail/licenses/aom.txt"
-
-    case "$platform" in
-        MINGW* | MSYS*)
-            install -D -m 644 "$cmake_windows_build_type/sail-extra-aom.lib" "$B/lib/aom.lib"
-            install -D -m 644 "$cmake_windows_build_type/sail-extra-aom.dll" "$B/bin/sail-extra-aom.dll"
-        ;;
-        Linux* | Darwin*)
-            find . -name 'libsail-extra-aom.so*' -exec cp -dp '{}' "$B/lib/{}" ';'
-        ;;
-    esac
-
-    cd "$ROOT"
-}
-
 build_avif()
 {
     unpack "$libavif_path"
@@ -518,12 +437,9 @@ build_avif()
     # Rename the library to have "sail-extra-" prefix
     patch CMakeLists.txt -i "$libavif_rename_patch_path"
 
-    # Find AOM in our location
-    patch CMakeLists.txt -i "$libavif_find_aom_patch_path"
-
     mkdir build
     cd build
-    cmake $cmake_platform_generate_options -DAVIF_CODEC_AOM=ON -DAOM_INCLUDE_DIR="$B/include" ..
+    cmake $cmake_platform_generate_options -DAVIF_LIBYUV=LOCAL -DAVIF_CODEC_AOM=LOCAL -DAOM_INCLUDE_DIR="$B/include" ..
     cmake --build . $cmake_platform_build_options --target install
 
     # Ship license
@@ -700,7 +616,6 @@ build_raw()
 
 build_zlib
 build_zstd
-build_aom
 
 build_jpeg
 build_png
