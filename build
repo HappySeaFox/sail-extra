@@ -92,7 +92,7 @@ libgif_fixes_patch_path="$SRC/gif/gif-fixes.diff"
 libavif_path="$SRC/avif/libavif-1.1.1.tar.gz"
 libavif_rename_patch_path="$SRC/avif/libavif-rename.diff"
 
-libwebp_path="$SRC/webp/libwebp-1.1.0.tar.gz"
+libwebp_path="$SRC/webp/libwebp-1.2.2.tar.gz"
 libwebp_rename_patch_path="$SRC/webp/webp-rename.diff"
 libwebp_export_patch_path="$SRC/webp/webp-export.diff"
 
